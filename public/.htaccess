@@ -1,0 +1,12 @@
+# Route all requests to public/index.php (Front Controller)
+RewriteEngine On
+
+# If the request is not pointing to an existing file or folder...
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# ...send everything to index.php
+RewriteRule ^ index.php [QSA,L]
+
+# Security: deny directory listings
+Options -Indexes

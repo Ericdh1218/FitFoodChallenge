@@ -1,0 +1,55 @@
+fitfoodchallenge/
+├─ public/                     # Punto de entrada (servido por Apache)
+│  ├─ index.php                # Front controller
+│  └─ .htaccess                # Rewrites y seguridad
+├─ app/
+│  ├─ Controllers/             # Controladores HTTP (finos)
+│  │  ├─ HomeController.php
+│  │  ├─ ActivitiesController.php
+│  │  ├─ HabitsController.php
+│  │  ├─ ProgressController.php
+│  │  └─ AccountController.php
+│  ├─ Models/                  # Acceso a datos (PDO)
+│  │  ├─ User.php
+│  │  ├─ Progress.php
+│  │  ├─ Activity.php
+│  │  └─ Habit.php
+│  ├─ Repositories/            # Consultas complejas/agrupadas (opcional)
+│  │  └─ ProgressRepository.php
+│  ├─ Services/                # Lógica de negocio (reglas, cálculos)
+│  │  ├─ ProgressService.php
+│  │  └─ BadgeService.php
+│  ├─ Middlewares/             # Autenticación, CSRF, etc.
+│  │  ├─ AuthMiddleware.php
+│  │  └─ CsrfMiddleware.php
+│  ├─ Views/                   # Plantillas PHP (sin lógica de negocio)
+│  │  ├─ layouts/
+│  │  │  └─ main.php
+│  │  ├─ home/ (index.php)
+│  │  ├─ activities/ (...)
+│  │  ├─ habits/ (...)
+│  │  ├─ progress/ (...)
+│  │  └─ account/ (...)
+│  ├─ Core/                    # Infraestructura del mini framework
+│  │  ├─ Router.php
+│  │  ├─ Request.php
+│  │  ├─ Response.php
+│  │  └─ Controller.php        # Base común (helpers, render, etc.)
+│  └─ Config/
+│     └─ DB.php                # Conexión PDO
+├─ config/
+│  ├─ bootstrap.php            # Autoload, env, sesión, errores
+│  ├─ helpers.php              # view(), route(), asset(), auth(), etc.
+│  └─ routes.php               # Define las rutas -> controller@action
+├─ resources/                  # Assets de build (si usas bundlers)
+├─ public/assets/              # CSS/JS/imagenes ya “compilados”
+├─ database/
+│  ├─ migrations/              # SQL versionado
+│  └─ seeds/                   # Datos de ejemplo
+├─ storage/
+│  ├─ logs/app.log             # Logs
+│  └─ cache/                   # Caché (si usas)
+├─ tests/                      # Pruebas (PHPUnit) (opcional)
+├─ .env                        # Variables (APP_URL, DB_*, URL_MODE)
+├─ .gitignore
+└─ README.md

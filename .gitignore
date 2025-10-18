@@ -1,0 +1,24 @@
+# Archivos del entorno local
+.env
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Archivos del sistema / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archivos de servidor WAMP
+*.log
+*.bak
+*.tmp
+*.swp
+
+# Dependencias (si usas Composer o npm en el futuro)
+vendor/
+node_modules/
+
+# Archivos temporales
+*.zip
+*.rar
