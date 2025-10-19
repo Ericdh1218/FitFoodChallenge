@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: fitfood_app
+    ports:
+      - "8080:80"              # http://localhost:8080
+    environment:
+      APP_ENV: local
+      APP_URL: http://localhost:8080
+      DB_HOST: db
+      DB_NAME: fitfood_db
+      DB_USER: fituser
+      DB_PASS: fitpass
+    volumes:
+      - ./:/var/www/html       # hot-reload del código
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: fitfood_db
+    environment:
+      MYSQL_DATABASE: fitfood_db
+      MYSQL_USER: fituser
+      MYSQL_PASSWORD: fitpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d:ro
+
+  phpmyadmin:                  # opcional (UI para la BD)
+    image: phpmyadmin:5
+    container_name: fitfood_pma
+    environment:
+      PMA_HOST: db
+      PMA_USER: fituser
+      PMA_PASSWORD: fitpass
+    ports:
+      - "8081:80"              # http://localhost:8081
+    depends_on:
+      - db
+
+volumes:
+  db_data:
