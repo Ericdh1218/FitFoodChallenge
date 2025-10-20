@@ -10,4 +10,16 @@ function loadCounters(){
   s('water', data.water);
 }
 
+// toggle del menú móvil
+const btn = document.querySelector('.menu-toggle');
+const nav = document.querySelector('.nav[data-collapsible]');
+
+if (btn && nav) {
+  btn.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+
+
 document.addEventListener('DOMContentLoaded', loadCounters);

@@ -15,14 +15,20 @@
 </head>
 <body>
   <header class="site-header container">
-    <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
-    <nav class="nav">
-      <a href="<?= url('/actividades') ?>">Actividades</a>
-      <a href="<?= url('/habitos') ?>">Hábitos</a>
-      <a href="<?= url('/progreso') ?>">Progreso</a>
-      <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-    </nav>
-  </header>
+  <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
+
+  <button class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="nav" data-collapsible>
+    <a href="<?= url('/actividades') ?>">Actividades</a>
+    <a href="<?= url('/habitos') ?>">Hábitos</a>
+    <a href="<?= url('/progreso') ?>">Progreso</a>
+    <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+  </nav>
+</header>
+
 
   <main class="container">
     <?php include $viewFile; ?>
