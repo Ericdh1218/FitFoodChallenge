@@ -21,3 +21,4 @@ require BASE_PATH . '/config/routes.php';
 
 // Despacho
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+

@@ -1,52 +1,35 @@
-<section class="hero">
-  <div class="hero-text">
-    <h1>Actívate hoy. <span>Cuida tu cuerpo</span> y tu mente.</h1>
-    <p>Mini retos diarios de movimiento y hábitos saludables para jóvenes. Sin equipo, sin excusas.</p>
-    <a class="btn primary" href="<?= url('/actividades') ?>">Explorar actividades</a>
-    <a class="btn ghost" href="<?= url('/habitos') ?>">Ver hábitos</a>
-  </div>
-  <div class="hero-stats">
-    <div class="stat"><strong id="streak">0</strong><span>días de racha</span></div>
-    <div class="stat"><strong id="minutes">0</strong><span>min de actividad</span></div>
-    <div class="stat"><strong id="water">0</strong><span>vasos de agua</span></div>
-  </div>
-</section>
+<?php /** @var array $usuario */ ?>
 
-<section class="grid cards">
-  <article class="card">
-    <h3>Reto 7x7</h3>
-    <p>7 minutos de actividad durante 7 días seguidos. ¡Empieza hoy!</p>
-    <a href="<?= url('/actividades') ?>" class="link">Comenzar →</a>
-  </article>
-  <article class="card">
-    <h3>Plato Semáforo</h3>
-    <p>Aprende a equilibrar tus comidas usando la guía visual por colores.</p>
-    <a href="<?= url('/habitos') ?>" class="link">Ver guía →</a>
-  </article>
-  <article class="card">
-    <h3>Mi Progreso</h3>
-    <p>Lleva el registro de tu actividad física y hábitos diarios.</p>
-    <a href="<?= url('/progreso') ?>" class="link">Abrir panel →</a>
-  </article>
-</section>
+<div class="auth-card-wrapper">
+    <div class="auth-card">
+        <h1 class="auth-title">Mi Perfil</h1>
+        <div class="profile-info">
+            <p><strong>Nombre:</strong> <?= htmlspecialchars($usuario['nombre'] ?? 'N/A') ?></p>
+            <p><strong>Correo:</strong> <?= htmlspecialchars($usuario['correo'] ?? 'N/A') ?></p>
+            <p><strong>Objetivo:</strong> <?= htmlspecialchars($usuario['objetivo_principal'] ?? 'N/A') ?></p>
+            <p><strong>Nivel Actividad:</strong> <?= htmlspecialchars($usuario['nivel_actividad'] ?? 'N/A') ?></p>
+            
+            <p><strong>Peso Actual:</strong> <?= htmlspecialchars($usuario['peso'] ?? 'N/A') ?> kg</p>
+            <p><strong>Altura:</strong> <?= htmlspecialchars($usuario['altura'] ?? 'N/A') ?> cm</p>
+            <p><strong>IMC:</strong> <?= htmlspecialchars($usuario['imc'] ?? 'N/A') ?></p>
+            </div>
+    </div>
+</div>
 
-<section class="grid cards">
-  <article class="card">
-    <h3>Logros diarios</h3>
-    <p>Desbloquea insignias por mantenerte activo y beber agua suficiente.</p>
-  </article>
-  <article class="card">
-    <h3>Reto de agua</h3>
-    <p>Bebe al menos 6 vasos de agua diarios y mejora tu energía.</p>
-  </article>
-  <article class="card">
-    <h3>Desayuno saludable</h3>
-    <p>Ideas simples para comenzar tu día con proteína y fruta.</p>
-  </article>
-</section>
-
-<section class="card" style="margin-top:40px">
-  <h2 style="margin-top:0">¿Qué es FitFoodChallenge?</h2>
-  <p>Es una iniciativa para promover la actividad física y los buenos hábitos alimenticios entre jóvenes como tú. Cada día puedes registrar tus avances, mantener una racha, aprender con mini retos y ver cómo mejoras paso a paso.</p>
-  <p>Todo es gratuito, sin necesidad de equipo, y lo puedes hacer desde casa o donde estés.</p>
-</section>
+<div class="auth-card-wrapper" style="padding-top: 16px;">
+    <div class="auth-card">
+        <h2 class="auth-title" style="font-size: 24px;">Registrar Progreso</h2>
+        <p class="auth-subtitle">Actualiza tu peso para ver tu evolución.</p>
+        
+        <form action="<?= url('/progreso') ?>" method="POST" style="margin-top: 24px;">
+            <div class="form-group">
+                <label for="peso_nuevo">Mi nuevo peso (en kg)</label>
+                <input type="number" id="peso_nuevo" name="peso" class="input" placeholder="Ej: 69.5" step="0.1" required>
+            </div>
+            
+            <button type="submit" class="btn primary" style="width:100%; margin-top:16px;">
+                Guardar Nuevo Peso
+            </button>
+        </form>
+    </div>
+</div>

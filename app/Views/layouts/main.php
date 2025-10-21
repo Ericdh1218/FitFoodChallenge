@@ -21,13 +21,23 @@
     <span></span><span></span><span></span>
   </button>
 
-  <nav class="nav" data-collapsible>
-    <a href="<?= url('/actividades') ?>">Actividades</a>
-    <a href="<?= url('/habitos') ?>">Hábitos</a>
-    <a href="<?= url('/progreso') ?>">Progreso</a>
-    <a href="<?= url('/deportes') ?>">Deportes</a>
-    <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-  </nav>
+  <nav class="nav">
+    <?php if (isset($_SESSION['usuario_id'])): ?>
+        
+        <a href="<?= url('/actividades') ?>">Actividades</a>
+        <a href="<?= url('/habitos') ?>">Hábitos</a>
+        <a href="<?= url('/progreso') ?>">Progreso</a>
+        <a href="<?= url('/deportes') ?>">Deportes</a>
+        <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+        <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+
+    <?php else: ?>
+        <a href="<?= url('/habitos') ?>">Hábitos</a>
+        <a href="<?= url('/deportes') ?>">Deportes</a> <a href="<?= url('/login') ?>">Login</a>
+        <a href="<?= url('/registro') ?>">Registro</a>
+
+    <?php endif; ?>
+</nav>
 </header>
 
 

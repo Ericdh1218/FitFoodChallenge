@@ -3,6 +3,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Services\ProgresoService;
+use App\Models\User;
+use App\Models\MedidasRegistro;
 
 class ProgresoController extends Controller
 {
@@ -12,17 +14,44 @@ class ProgresoController extends Controller
         $this->render('home/progreso', compact('title'));
     }
 
-    public function store(): void
+    public function store()
     {
-        // demo: usuario 1 (cámbialo cuando tengas auth)
-        $userId = $_SESSION['user_id'] ?? 1;
-        $minutes = max(0, (int)($_POST['minutes'] ?? 0));
-        $water   = max(0, (int)($_POST['water'] ?? 0));
+        // 1. Verificar sesión
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: ' . url('/login'));
+            exit;
+        }
+        
+        $userId = $_SESSION['usuario_id'];
+        $nuevoPeso = (float)($_POST['peso'] ?? 0);
+        $fechaHoy = date('Y-m-d');
 
-        $svc = new ProgresoService();
-        $ok  = $svc->saveToday($userId, $minutes, $water);
+        if ($nuevoPeso <= 0) {
+            // Error, redirigir
+            header('Location: ' . url('/micuenta'));
+            exit;
+        }
 
-        header('Content-Type: application/json');
-        echo json_encode(['ok' => $ok]);
+        // 2. Obtener la altura del usuario para recalcular el IMC
+        $userModel = new User();
+        $usuario = $userModel->findById($userId);
+        $altura = (float)($usuario['altura'] ?? 0);
+
+        $nuevoImc = 0;
+        if ($altura > 0) {
+            $altura_m = $altura / 100;
+            $nuevoImc = round($nuevoPeso / ($altura_m * $altura_m), 1);
+        }
+
+        // 3. Guardar en el historial (medidas_registro)
+        $medidasModel = new MedidasRegistro();
+        $medidasModel->create($userId, $fechaHoy, $nuevoPeso);
+        
+        // 4. Actualizar el perfil actual (users)
+        $userModel->updateBiometrics($userId, $nuevoPeso, $nuevoImc);
+
+        // 5. Redirigir de vuelta a la página de perfil
+        header('Location: ' . url('/micuenta'));
+        exit;
     }
 }
