@@ -21,5 +21,19 @@ if (btn && nav) {
   });
 }
 
+// Filtro por categoría en /deportes
+document.querySelectorAll('#filtros [data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tag = btn.getAttribute('data-filter');
+    const cards = document.querySelectorAll('[data-workout-list] .card');
+
+    cards.forEach(card => {
+      const tags = (card.getAttribute('data-tags') || '').split(',');
+      const show = tag === 'all' || tags.includes(tag);
+      card.style.display = show ? '' : 'none';
+    });
+  });
+});
+
 
 document.addEventListener('DOMContentLoaded', loadCounters);

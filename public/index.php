@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 define('BASE_PATH', dirname(__DIR__));
+use App\Config\DB;
+// $pdo = DB::conn(); var_dump($pdo instanceof PDO); // true
+// exit;
+
 
 // Debug duro por ahora
 error_reporting(E_ALL);

@@ -136,3 +136,10 @@ Hecho con ❤️ usando PHP, CSS y buenas prácticas de desarrollo web.
 ## 📜 Licencia
 
 Este proyecto está bajo la licencia **MIT**, por lo que puedes usarlo, modificarlo y distribuirlo libremente dando el crédito correspondiente.
+
+
+### Instalación con Docker
+```bash
+docker compose up -d
+# App: http://localhost:8080
+# phpMyAdmin: http://localhost:8081

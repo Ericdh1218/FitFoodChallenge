@@ -25,6 +25,7 @@
     <a href="<?= url('/actividades') ?>">Actividades</a>
     <a href="<?= url('/habitos') ?>">Hábitos</a>
     <a href="<?= url('/progreso') ?>">Progreso</a>
+    <a href="<?= url('/deportes') ?>">Deportes</a>
     <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
   </nav>
 </header>

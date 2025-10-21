@@ -29,3 +29,4 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Helpers
 require BASE_PATH . '/config/helpers.php';
+require_once BASE_PATH . '/config/DB.php'; // <-- temporal, para asegurar carga

@@ -296,3 +296,22 @@ p, .text { font-size: clamp(.95rem, .3vw + .9rem, 1.05rem); }
 /* Mejoras de lectura en pantallas pequeñas */
 .list{ line-height: 1.8; }
 footer.site-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #1f2937; }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        /* Proporción 16:9 para videos estándar */
+        aspect-ratio: 16 / 9;
+        border-radius: 12px; /* Para que coincida con el estilo de tus imágenes */
+        margin-top: 8px;
+    }
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }

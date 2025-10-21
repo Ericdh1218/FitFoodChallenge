@@ -1,6 +1,14 @@
 <?php
 function env(string $k, $d=null){ return $_ENV[$k] ?? getenv($k) ?: $d; }
 
+if (!function_exists('env')) {
+    function env(string $key, $default = null) {
+        $v = $_ENV[$key] ?? getenv($key);
+        return $v === false || $v === null ? $default : $v;
+    }
+}
+
+
 function url(string $path=''): string {
     $base = rtrim(env('APP_URL',''),'/');
     if ($base==='') {
