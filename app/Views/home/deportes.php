@@ -64,12 +64,19 @@
                     if ($img && !preg_match('~^https?://~', $img)) {
                         $img = url('assets/img/' . $img);
                     }
+                    $detalleUrl = url('/deportes?id=' . $e['id']);
                     ?>
+
                     <?php if (!empty($img)): ?>
-                        <div style="border-radius:12px;overflow:hidden;margin:.5rem 0;">
-                            <img src="<?= htmlspecialchars($img) ?>" alt="" style="width:100%;height:auto">
-                        </div>
+                        <a href="<?= htmlspecialchars($detalleUrl) ?>" class="card-image-link">
+                            <div style="border-radius:12px;overflow:hidden;margin:16px 0;">
+                                <img src="<?= htmlspecialchars($img) ?>" alt="Ver detalle de <?= htmlspecialchars($e['nombre']) ?>"
+                                    style="width:100%;height:auto;">
+                            </div>
+                        </a>
                     <?php endif; ?>
+
+                    <a href="<?= htmlspecialchars($detalleUrl) ?>" class="link">Ver detalle →</a>
 
                     <p><?= htmlspecialchars(mb_strimwidth($e['descripcion'] ?? '', 0, 180, '…')) ?></p>
 

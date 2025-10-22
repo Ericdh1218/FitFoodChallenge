@@ -745,3 +745,54 @@ border: 0;
   font-size: 14px;
   font-weight: 500;
 }
+
+.ejercicio-lista {
+        display: grid;
+        gap: 16px;
+        margin-top: 24px;
+    }
+    .ejercicio-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+    }
+    .ejercicio-item h4 {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+    }
+    .ejercicio-item p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    .ejercicio-item .btn {
+        margin-top: 0; /* Resetea el margen del botón */
+        flex-shrink: 0; /* Evita que el botón se encoja */
+        margin-left: 16px;
+    }
+
+    /* ===================================
+ * Enlace clicable en la imagen de la tarjeta
+ * =================================== */
+
+.card-image-link {
+  display: block;
+  /* Mantiene las esquinas redondeadas del contenedor */
+  border-radius: 12px;
+  overflow: hidden;
+  /* Transición suave para el hover */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-image-link:hover {
+  /* Levanta la imagen ligeramente */
+  transform: translateY(-2px);
+  /* Añade una sombra más pronunciada */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.card-image-link:hover img {
+  /* Efecto de zoom sutil sobre la imagen */
+  transform: scale(1.03);
+  transition: transform 0.2s ease-out;
+}

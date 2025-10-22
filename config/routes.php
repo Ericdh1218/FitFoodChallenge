@@ -7,7 +7,7 @@ use App\Controllers\CuentaController;
 use App\Controllers\DeportesController;
 use App\Controllers\RegistroController;
 use App\Controllers\LoginController;
-
+use App\Controllers\RutinasController;
 
 $router->get('/', [HomeController::class,'index']);
 $router->get('/actividades', [ActividadesController::class,'index']);
@@ -18,6 +18,8 @@ $router->get('/registro', [RegistroController::class, 'show']);
 $router->post('/registro', [RegistroController::class, 'store']);
 $router->get('/login', [LoginController::class, 'show']);
 $router->post('/login', [LoginController::class, 'store']);
+$router->get('/rutinas', [RutinasController::class, 'index']);
+$router->get('/rutina', [RutinasController::class, 'show']);
 // ==============================================
 
 $router->get('/micuenta', [CuentaController::class,'index']); // <-- CORRECTA

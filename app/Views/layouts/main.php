@@ -27,6 +27,7 @@
         <a href="<?= url('/actividades') ?>">Actividades</a>
         <a href="<?= url('/habitos') ?>">Hábitos</a>
         <a href="<?= url('/progreso') ?>">Progreso</a>
+        <a href="<?= url('/rutinas') ?>">Rutinas</a>
         <a href="<?= url('/deportes') ?>">Deportes</a>
         <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
         <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
