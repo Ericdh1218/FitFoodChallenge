@@ -35,5 +35,45 @@ document.querySelectorAll('#filtros [data-filter]').forEach(btn => {
   });
 });
 
+// Espera a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function () {
+    // Selecciona TODOS los formularios de eliminación
+    const deleteForms = document.querySelectorAll('.delete-form');
 
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+            // 1. Previene el envío normal del formulario
+            event.preventDefault(); 
+
+            // 2. Muestra el modal de SweetAlert2
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning', // Icono de advertencia
+                showCancelButton: true, // Muestra el botón de cancelar
+                confirmButtonColor: '#d33', // Color rojo para confirmar
+                cancelButtonColor: '#3085d6', // Color azul para cancelar
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                // Estilos para tema oscuro (opcional pero recomendado)
+                background: 'var(--panel, #0f172a)', 
+                color: 'var(--text, #e5e7eb)',
+            }).then((result) => {
+                // 3. Si el usuario confirma...
+                if (result.isConfirmed) {
+                    // ...envía el formulario original de forma programática
+                    form.submit(); 
+                }
+            });
+        });
+    });
+
+    // Opcional: Estilo específico para el botón Eliminar
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(button => {
+        button.style.color = 'var(--danger, #ef4444)';
+        button.style.borderColor = 'var(--danger, #ef4444)';
+    });
+
+});
 document.addEventListener('DOMContentLoaded', loadCounters);

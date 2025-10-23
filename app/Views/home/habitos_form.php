@@ -54,6 +54,14 @@
                     <label for="altura">7. ¿Cuál es tu altura? (en cm)</label>
                     <input type="number" id="altura" name="altura" class="input" placeholder="Ej: 175" required>
                 </div>
+                <div class="form-group">
+                 <label for="genero">8. ¿Cuál es tu género?</label>
+                 <select id="genero" name="genero" class="input" required>
+                     <option value="" disabled selected>Selecciona</option>
+                     <option value="masculino">Masculino</option>
+                     <option value="femenino">Femenino</option>
+                 </select>
+             </div>
                 <button type="submit" class="btn primary" style="width:100%; ...">
                     ¡Comenzar mi reto!
                 </button>

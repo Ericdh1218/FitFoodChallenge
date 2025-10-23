@@ -5,13 +5,36 @@ use App\Core\Controller;
 use App\Services\ProgresoService;
 use App\Models\User;
 use App\Models\MedidasRegistro;
+use App\Models\HabitoRegistro;
 
-class ProgresoController extends Controller
+class ProgresoController
 {
-    public function index(): void
+    /**
+     * Muestra el dashboard de progreso y check-in
+     */
+    public function index()
     {
-        $title = 'Mi progreso';
-        $this->render('home/progreso', compact('title'));
+        // 1. Proteger la ruta
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: ' . url('/login'));
+            exit;
+        }
+
+        $userId = $_SESSION['usuario_id'];
+        $userModel = new User();
+        
+        // 2. Buscar los datos del usuario (para saber sus objetivos)
+        $usuario = $userModel->findById($userId);
+        
+        // 3. (Añadiremos esto después)
+        // Buscar si ya tiene un registro de hábitos para HOY
+        // $registroHoy = ...
+
+        view('home/progreso', [
+            'title'   => 'Mi Progreso',
+            'usuario' => $usuario
+            // 'registroHoy' => $registroHoy (próximamente)
+        ]);
     }
 
     public function store()
@@ -54,4 +77,28 @@ class ProgresoController extends Controller
         header('Location: ' . url('/micuenta'));
         exit;
     }
+public function saveCheckin()
+    {
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: ' . url('/login'));
+            exit;
+        }
+
+        $userId = $_SESSION['usuario_id'];
+        $fechaHoy = date('Y-m-d');
+        
+        $data = [
+            'agua_cumplido'          => isset($_POST['agua_cumplido']) ? 1 : 0,
+            'sueno_cumplido'         => isset($_POST['sueno_cumplido']) ? 1 : 0,
+            'entrenamiento_cumplido' => isset($_POST['entrenamiento_cumplido']) ? 1 : 0,
+        ];
+        
+        $model = new HabitoRegistro();
+        $model->saveCheckin($userId, $fechaHoy, $data);
+
+        // Redirigir de vuelta a la página de progreso
+        header('Location: ' . url('/progreso'));
+        exit;
+    }
 }
+

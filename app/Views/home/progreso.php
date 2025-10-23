@@ -1,25 +1,45 @@
-<section class="section">
-  <h2 style="margin-top:0">Registrar avance</h2>
-  <form id="form-progress" method="post" action="<?= url('/progreso') ?>" class="grid" style="grid-template-columns:repeat(3,1fr);gap:12px;">
-    <input class="input" type="number" name="minutes" min="0" max="600" placeholder="Minutos (ej. 10)">
-    <input class="input" type="number" name="water"   min="0" max="30"  placeholder="Vasos de agua (ej. 6)">
-    <button class="btn primary" style="grid-column: span 3;">Guardar</button>
-  </form>
-  <p class="muted" id="saveMsg"></p>
-</section>
+<?php /** @var array $usuario */ ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('form-progress');
-  if (!form) return;
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const res = await fetch('<?= url('/progreso') ?>', { method: 'POST', body: fd });
-    const data = await res.json().catch(()=>({ok:false}));
-    const msg = document.getElementById('saveMsg');
-    if (data.ok) { msg.textContent = 'Guardado ✅'; msg.style.color = '#22c55e'; }
-    else { msg.textContent = 'Error ❌'; msg.style.color = '#ef4444'; }
-  });
-});
-</script>
+<h1 style="margin-bottom: 8px;">Mi Progreso</h1>
+<p class="muted">Registra aquí tus hábitos diarios para ganar puntos.</p>
+
+<div class="auth-card-wrapper" style="padding-top: 16px;">
+    <div class="auth-card" style="background: var(--panel); border: 1px solid var(--line);">
+        
+        <h2 class="auth-title" style="color: var(--text); font-size: 24px;">Check-in de Hoy</h2>
+        <p class="auth-subtitle" style="color: var(--muted);">
+            ¿Cómo te fue hoy, <?= htmlspecialchars($usuario['nombre']) ?>?
+        </p>
+        
+        <form action="<?= url('/progreso/checkin') ?>" method="POST" style="margin-top: 24px;">
+            
+            <div class="form-check-group">
+                <input type="checkbox" id="agua" name="agua_cumplido" value="1">
+                <label for="agua">
+                    <strong>Agua:</strong> 
+                    <span>Completaste tu meta de <?= (int)($usuario['consumo_agua'] ?? 0) ?> vasos.</span>
+                </label>
+            </div>
+
+            <div class="form-check-group">
+                <input type="checkbox" id="sueno" name="sueno_cumplido" value="1">
+                <label for="sueno">
+                    <strong>Sueño:</strong> 
+                    <span>Dormiste tus <?= (int)($usuario['horas_sueno'] ?? 0) ?> horas.</span>
+                </label>
+            </div>
+
+            <div class="form-check-group">
+                <input type="checkbox" id="entrenamiento" name="entrenamiento_cumplido" value="1">
+                <label for="entrenamiento">
+                    <strong>Entrenamiento:</strong> 
+                    <span>Realizaste tu rutina de ejercicio de hoy.</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn primary" style="width:100%; margin-top: 24px;">
+                Guardar mi Progreso ✅
+            </button>
+        </form>
+    </div>
+</div>

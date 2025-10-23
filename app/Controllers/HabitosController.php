@@ -48,6 +48,7 @@ class HabitosController extends Controller
             // === NUEVOS CAMPOS ===
             'peso' => (float) ($_POST['peso'] ?? 0),
             'altura' => (float) ($_POST['altura'] ?? 0),
+            'genero' => $_POST['genero'] ?? null,
         ];
 
         // 3. Calcular el IMC

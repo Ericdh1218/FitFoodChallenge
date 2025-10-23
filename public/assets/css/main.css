@@ -796,3 +796,209 @@ border: 0;
   transform: scale(1.03);
   transition: transform 0.2s ease-out;
 }
+
+/* ===================================
+ * Estilos para Menú Desplegable (Dropdown)
+ * =================================== */
+
+/* 1. Contenedor principal del dropdown */
+.dropdown {
+  position: relative;
+  display: block; /* Asegura que ocupe espacio */
+}
+
+/* Estilos para el enlace principal del dropdown (toggle) */
+.dropdown-toggle {
+  padding: 10px 14px; /* Mismo padding que .nav a */
+  border-radius: 10px; /* Mismo borde que .nav a */
+  border: 1px solid transparent; /* Mismo borde que .nav a */
+  /* Asegura que funcione bien dentro de flexbox */
+  display: inline-flex;
+  align-items: center;
+  cursor: default; /* Indica que no es un enlace directo */
+}
+.dropdown-toggle:hover {
+  background: #0d1729; /* Mismo hover que .nav a */
+  border-color: #0d223a; /* Mismo hover que .nav a */
+}
+
+/* 2. El menú oculto */
+.dropdown-menu {
+  display: none; /* Oculto por defecto */
+  position: absolute; /* Posición absoluta en desktop */
+
+  /* Estilo visual (usa tus variables) */
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+
+  min-width: 180px; /* Ancho mínimo */
+  padding: 8px;
+  z-index: 100; /* Se mostrará por encima de otro contenido */
+  margin-top: 4px; /* Pequeño espacio entre el toggle y el menú */
+}
+
+/* 3. Enlaces dentro del menú */
+.dropdown-menu a {
+  display: block; /* Un enlace por línea */
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px; /* Esquinas más suaves */
+}
+.dropdown-menu a:hover {
+  background: var(--card); /* Fondo al pasar el mouse */
+}
+
+/* 4. Lógica para MÓVIL (dentro del hamburger) */
+@media (max-width: 767px) {
+  .dropdown {
+    position: static; /* Resetea el dropdown */
+  }
+
+  /* El .dropdown-toggle ya tiene estilos generales, pero aquí podemos ajustar si es necesario */
+  /* Por ejemplo, hacer el título del grupo más obvio */
+  .dropdown-toggle {
+     font-weight: 600; /* Ligeramente más grueso */
+     /* Podrías ponerle color cian si quieres */
+     /* color: var(--brand-2); */
+  }
+
+  .dropdown-menu {
+    /* Se muestra como un bloque normal, no un menú flotante */
+    display: block;
+    position: static;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0 0 0 16px; /* Indentación para los sub-enlaces */
+    min-width: auto;
+    margin-top: 4px; /* Un poco de espacio también en móvil */
+  }
+
+  /* Ocultamos la flechita en móvil */
+  .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+/* 5. Lógica para DESKTOP (menú flotante) */
+@media (min-width: 768px) {
+  /* Al pasar el mouse sobre .dropdown O al hacer foco... */
+  .dropdown:hover .dropdown-menu,
+  .dropdown:focus-within .dropdown-menu {
+    display: block; /* ...muestra el menú */
+  }
+
+  /* Pequeña flecha (opcional) */
+  .dropdown-toggle::after {
+    content: ' ▼';
+    font-size: 0.6em;
+    opacity: 0.6;
+    margin-left: 4px;
+  }
+}
+
+/* ===================================
+ * Estilos para Guía Nutricional
+ * =================================== */
+
+.guia-grid {
+    display: grid;
+    /* Tarjetas un poco más estrechas para que quepan más */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.guia-card {
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.guia-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.guia-card img {
+    width: 100%;
+    /* Altura de imagen reducida */
+    height: 100px; 
+    object-fit: cover; 
+    display: block;
+}
+
+.guia-card-content {
+    padding: 12px;
+}
+
+.guia-card h4 {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95rem; 
+    line-height: 1.4;
+}
+/* ===================================
+ * Estilo para Botón de Eliminar
+ * =================================== */
+
+.btn-delete {
+  /* Color de texto rojo */
+  color: var(--danger, #ef4444) !important; /* !important para asegurar */
+  /* Borde rojo */
+  border-color: var(--danger, #ef4444) !important;
+}
+
+.btn-delete:hover {
+  /* Fondo rojo suave al pasar el mouse */
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #fca5a5 !important; /* Texto rojo más claro */
+}
+
+.link-ejercicio-tabla {
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+}
+.link-ejercicio-tabla img {
+    width: 40px; 
+    height: 40px; 
+    object-fit: cover; 
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.link-ejercicio-tabla:hover span {
+    color: var(--brand-2);
+    text-decoration: underline;
+}
+
+.card-articulo {
+    display: flex; /* Imagen a la izquierda, texto a la derecha */
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px; /* Menos padding vertical */
+}
+.card-articulo img {
+    width: 100px; /* Ancho fijo para imagen */
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+.card-articulo .tag { margin-bottom: 8px; }
+.card-articulo h3 { margin: 0 0 4px 0; font-size: 1.2rem; }
+.card-articulo p { margin: 0; font-size: 0.95rem; }
+
+.articulo-contenido {
+    line-height: 1.8; /* Mejor legibilidad */
+    font-size: 1.05rem;
+}
+.articulo-contenido p { /* Espacio entre párrafos si usas HTML */
+    margin-bottom: 1.2em;
+}

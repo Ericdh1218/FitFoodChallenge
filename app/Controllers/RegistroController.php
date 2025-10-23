@@ -26,6 +26,7 @@ class RegistroController
             'correo'     => $_POST['correo'] ?? '',
             'contrasena' => $_POST['contrasena'] ?? '',
             'edad'       => $_POST['edad'] ?? '',
+            'genero'     => $_POST['genero'] ?? null,
         ];
 
         // Validación básica

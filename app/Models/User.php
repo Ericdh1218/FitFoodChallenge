@@ -39,9 +39,9 @@ class User
         // ==========================================================
         
         // 1. Usamos los nombres de columna REALES de tu base de datos:
-        //    'password_hash' y 'Edad' (con E mayúscula).
-        $sql = "INSERT INTO users (nombre, correo, password_hash, Edad) 
-                VALUES (:nombre, :correo, :password_hash, :edad)";
+        //    'password_hash' y 'edad' (con e minúscula).
+        $sql = "INSERT INTO users (nombre, correo, password_hash, edad, genero) 
+                VALUES (:nombre, :correo, :password_hash, :edad, :genero)";
         
         $st = $this->pdo->prepare($sql);
         
@@ -52,7 +52,8 @@ class User
             // El controlador envía 'contrasena', pero el SQL espera ':password_hash'
             ':password_hash' => $data['contrasena'], 
             // El controlador envía 'edad', pero el SQL espera ':edad'
-            ':edad'          => $data['edad']
+            ':edad'          => $data['edad'],
+            ':genero'       => $data['genero']
         ]);
     }
 
@@ -68,7 +69,8 @@ public function updateProfile(int $id, array $data): bool
                 -- === NUEVAS LÍNEAS ===
                 peso = :peso,
                 altura = :altura,
-                imc = :imc
+                imc = :imc,
+                genero = :genero
             WHERE id = :id";
     
     $st = $this->pdo->prepare($sql);
@@ -83,6 +85,7 @@ public function updateProfile(int $id, array $data): bool
         ':peso'               => $data['peso'],
         ':altura'             => $data['altura'],
         ':imc'                => $data['imc'],
+        ':genero'             => $data['genero'],
         ':id'                 => $id
     ]);
 }

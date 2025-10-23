@@ -26,6 +26,15 @@
                 <input type="number" id="edad" name="edad" class="input" placeholder="Tu edad" required>
             </div>
 
+            <div class="form-group">
+                <label for="genero">Género</label>
+                <select id="genero" name="genero" class="input" required>
+                    <option value="" disabled selected>Selecciona tu género</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn primary" style="width:100%; margin-top:16px; padding-top: 14px; padding-bottom: 14px; font-size: 16px;">
                 Crear mi cuenta
             </button>

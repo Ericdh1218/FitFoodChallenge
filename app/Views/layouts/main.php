@@ -21,23 +21,36 @@
     <span></span><span></span><span></span>
   </button>
 
-  <nav class="nav">
-    <?php if (isset($_SESSION['usuario_id'])): ?>
+  <nav class="nav" data-collapsible>
+    <a href="<?= url('/actividades') ?>">Actividades</a>
+    <a href="<?= url('/habitos') ?>">Hábitos</a>
+    <a href="<?= url('/progreso') ?>">Progreso</a>
+    <a href="<?= url('/articulos') ?>" style="border-top: 1px solid var(--line);">Biblioteca</a>
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle">Actividad fisica</a>
         
-        <a href="<?= url('/actividades') ?>">Actividades</a>
-        <a href="<?= url('/habitos') ?>">Hábitos</a>
-        <a href="<?= url('/progreso') ?>">Progreso</a>
-        <a href="<?= url('/rutinas') ?>">Rutinas</a>
-        <a href="<?= url('/deportes') ?>">Deportes</a>
-        <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-        <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
-
-    <?php else: ?>
-        <a href="<?= url('/habitos') ?>">Hábitos</a>
-        <a href="<?= url('/deportes') ?>">Deportes</a> <a href="<?= url('/login') ?>">Login</a>
-        <a href="<?= url('/registro') ?>">Registro</a>
-
-    <?php endif; ?>
+        <div class="dropdown-menu">
+            <a href="<?= url('/deportes') ?>">Ejercicios</a>
+            <a href="<?= url('/rutinas') ?>">Rutinas</a>
+        </div>
+    </div>
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle">Nutrición</a>
+        
+        <div class="dropdown-menu">
+            <a href="<?= url('/recetas') ?>">Recetas</a>
+            <a href="<?= url('/guia-nutricional') ?>" style="border-top: 1px solid var(--line);">Guía Nutricional</a>
+        </div>
+    </div>
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle">
+            <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
+        </a>
+        <div class="dropdown-menu">
+            <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+            <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+        </div>
+    </div>
 </nav>
 </header>
 
@@ -49,5 +62,9 @@
   <footer class="site-footer container">
     <small>&copy; <?= date('Y') ?> FitFoodChallenge. Hecho con ❤.</small>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module" src="<?= url('assets/js/main.js') ?>" defer></script>
 </body>
 </html>

@@ -1,6 +1,14 @@
-<?php /** @var array $e */ ?>
+<?php 
+/** @var array $e */ 
+
+// Determinar a dónde debe volver el enlace
+$volverUrl = url('/deportes'); // Por defecto, vuelve a la lista
+if (!empty($_GET['return_url'])) {
+    $volverUrl = urldecode($_GET['return_url']); // Si viene el parámetro, úsalo
+}
+?>
 <article>
-    <a class="link" href="<?= url('/deportes') ?>">← Volver</a>
+    <a class="link" href="<?= htmlspecialchars($volverUrl) ?>">← Volver</a>
     
     <h1 style="margin-top:8px"><?= htmlspecialchars($e['nombre']) ?></h1>
     <p class="muted">
