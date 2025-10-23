@@ -266,5 +266,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
-    } // Fin del if (tablaEnRutinaBody)
+    }
+});
 </script>

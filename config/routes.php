@@ -34,6 +34,7 @@ $router->get('/login', [LoginController::class, 'show']);
 $router->post('/login', [LoginController::class, 'store']);
 $router->get('/rutinas', [RutinasController::class, 'index']);
 $router->get('/rutina', [RutinasController::class, 'show']);
+$router->post('/articulo/marcar-leido', [ArticulosController::class, 'markAsRead']);
 // ==============================================
 $router->get('/rutinas/crear', [RutinasController::class, 'create']); // Muestra el form
 $router->post('/rutinas/crear', [RutinasController::class, 'store']); // Guarda la nueva rutina

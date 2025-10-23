@@ -751,26 +751,42 @@ border: 0;
         gap: 16px;
         margin-top: 24px;
     }
-    .ejercicio-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-    }
-    .ejercicio-item h4 {
-        margin: 0 0 4px 0;
-        font-size: 1.1rem;
-    }
-    .ejercicio-item p {
-        margin: 0;
-        font-size: 0.9rem;
-    }
-    .ejercicio-item .btn {
-        margin-top: 0; /* Resetea el margen del botón */
-        flex-shrink: 0; /* Evita que el botón se encoja */
-        margin-left: 16px;
-    }
-
+ @media (max-width: 600px) {
+  .ejercicio-item {
+    padding: 12px; 
+    display: block; /* Asegura que sea un bloque */
+    text-align: center; 
+    
+    /* === NUEVAS LÍNEAS === */
+    box-sizing: border-box; /* Asegura que padding no aumente el tamaño total */
+    overflow: hidden; /* Oculta cualquier cosa que se desborde */
+    width: 100%; /* Asegura que ocupe el ancho disponible */
+    /* ===================== */
+  }
+  
+  .ejercicio-item div:first-child { 
+    margin-bottom: 10px; 
+  }
+  
+  .ejercicio-item h4 {
+      font-size: 1.1rem; 
+  }
+  
+  .ejercicio-item p {
+      font-size: 0.9rem;
+  }
+  
+  .ejercicio-item .btn {
+    width: 100%; 
+    display: block;
+    margin-left: 0; 
+    padding: 10px 14px; 
+    
+    /* === NUEVA LÍNEA === */
+    box-sizing: border-box; /* También aplica al botón por si acaso */
+    /* =================== */
+  }
+}
     /* ===================================
  * Enlace clicable en la imagen de la tarjeta
  * =================================== */
@@ -1001,4 +1017,93 @@ border: 0;
 }
 .articulo-contenido p { /* Espacio entre párrafos si usas HTML */
     margin-bottom: 1.2em;
+}
+
+.card-articulo { display: flex; gap: 16px; align-items: flex-start; padding: 16px; }
+.card-articulo img { width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); flex-shrink: 0; }
+.card-articulo-content { flex-grow: 1; } /* El texto ocupa el resto */
+.card-articulo .tag { margin-bottom: 8px; }
+.card-articulo h3 { margin: 0 0 4px 0; font-size: 1.2rem; }
+.card-articulo h3 a.link-external { color: var(--text); } /* Enlace del título */
+.card-articulo h3 a.link-external:hover { color: var(--brand-2); text-decoration: underline; }
+.card-articulo p { margin: 0 0 8px 0; font-size: 0.95rem; }
+.tag-leido { background: var(--brand); color: var(--bg); font-weight: bold; }
+.flash-success { padding: 12px 16px; font-weight: 500; } /* Estilo mensaje flash */
+
+/* ===================================
+ * Layout Detalle Artículo (Imagen Izquierda, Resumen Derecha v2)
+ * =================================== */
+
+.articulo-detalle-layout {
+    max-width: 900px; /* Ancho máximo */
+    margin: 0 auto; /* Centrado */
+    padding: 20px;
+}
+
+.articulo-header-layout {
+    display: grid; /* Usamos Grid */
+    /* Columna imagen ANCHO FIJO 150px, resumen flexible 1fr */
+    grid-template-columns: 150px 1fr;
+    gap: 24px; /* Espacio entre imagen y resumen */
+    align-items: flex-start; /* Alinear arriba */
+    margin-top: 24px;
+}
+
+/* Columna de la Imagen */
+.articulo-imagen-col img.articulo-imagen-pequena {
+    width: 100%; /* Imagen ocupa todo el ancho de su columna (150px) */
+    height: 150px; /* Altura igual al ancho (cuadrada) */
+    object-fit: cover; /* Recorta la imagen */
+    border-radius: var(--radius-sm); /* Bordes redondeados */
+    display: block;
+}
+
+/* Columna del Resumen */
+.articulo-resumen-col {
+    /* Es un .section, así que hereda estilos, pero ajustamos */
+    margin-top: 0 !important; /* Quitar margen superior */
+    padding: 20px; /* Padding interno */
+}
+.articulo-resumen-col h3 {
+    margin-top: 0; /* Quitar margen del h3 */
+}
+.articulo-resumen-col p {
+    line-height: 1.7; /* Texto más legible */
+}
+
+/* Responsive: Apilar en móvil */
+@media (max-width: 600px) {
+    .articulo-header-layout {
+        grid-template-columns: 1fr; /* Una sola columna */
+        gap: 16px;
+    }
+    .articulo-imagen-col {
+        width: 100%; /* Ocupa todo el ancho */
+        max-width: 300px; /* Ancho máximo */
+        margin: 0 auto; /* Centrar */
+    }
+    .articulo-imagen-col img.articulo-imagen-pequena {
+        height: auto; /* Altura automática */
+        aspect-ratio: 16 / 10; /* Proporción */
+    }
+    .articulo-resumen-col {
+        margin-top: 16px !important; /* Espacio arriba */
+    }
+    /* Opcional: Centrar botón Leer Completo en móvil */
+    /* .articulo-detalle-layout > div:nth-of-type(2) { text-align: center; } */
+}
+
+.btn-marcar-leido {
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--brand-2); /* Asegura el color cian */
+  border-bottom: 1px dashed transparent; /* Mismo efecto hover que .link */
+  transition: border-color 0.2s ease;
+}
+.btn-marcar-leido:hover {
+  border-bottom-color: var(--brand-2);
 }

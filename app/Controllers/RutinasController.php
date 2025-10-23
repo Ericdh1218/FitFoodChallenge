@@ -35,7 +35,7 @@ class RutinasController
      * Muestra el detalle de UNA rutina prediseñada.
      * Responde a la ruta: /rutina (usando ?id=)
      */
-    public function show()
+    public function show() // <-- Asegúrate que sea este método el que reemplazas
     {
         // Solo usuarios logueados
         if (!isset($_SESSION['usuario_id'])) {
@@ -45,25 +45,33 @@ class RutinasController
 
         $id = (int)($_GET['id'] ?? 0);
         if (!$id) {
-            header('Location: ' . url('/rutinas'));
+            // Si no hay ID, redirige a la lista de rutinas, no de artículos
+            header('Location: ' . url('/rutinas')); 
             exit;
         }
 
-        $rutinaModel = new Rutina();
-        $rutina = $rutinaModel->findPredefinida($id);
+        // === USA EL MODELO Rutina ===
+        $rutinaModel = new Rutina(); 
+        // Busca la rutina PREDEFINIDA
+        $rutina = $rutinaModel->findPredefinida($id); 
 
         if (!$rutina) {
-            // No se encontró la rutina, volver a la lista
+            // No se encontró la rutina prediseñada
             header('Location: ' . url('/rutinas'));
             exit;
         }
 
-        $ejercicios = $rutinaModel->getEjerciciosDeRutinaPredefinida($id);
+        // Obtiene los ejercicios de la rutina PREDEFINIDA
+        $ejercicios = $rutinaModel->getEjerciciosDeRutinaPredefinida($id); 
+        // ============================
 
-        view('home/rutina_detalle', [
-            'rutina' => $rutina,
+        // === LLAMA A LA VISTA CORRECTA ===
+        view('home/rutina_detalle', [ 
+            'title'      => $rutina['nombre_rutina'],
+            'rutina'     => $rutina,
             'ejercicios' => $ejercicios
         ]);
+        // ==============================
     }
     public function create()
     {
