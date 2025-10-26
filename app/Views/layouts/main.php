@@ -25,35 +25,48 @@
   </button>
 
   <nav class="nav" data-collapsible>
-    <a href="<?= url('/actividades') ?>">Actividades</a>
-    <a href="<?= url('/habitos') ?>">Hábitos</a>
-    <a href="<?= url('/progreso') ?>">Progreso</a>
-    <a href="<?= url('/articulos') ?>" style="border-top: 1px solid var(--line);">Biblioteca</a>
-    <div class="dropdown">
-        <a href="#" class="dropdown-toggle">Actividad fisica</a>
-        
-        <div class="dropdown-menu">
-            <a href="<?= url('/deportes') ?>">Ejercicios</a>
-            <a href="<?= url('/rutinas') ?>">Rutinas</a>
+    <?php if (isset($_SESSION['usuario_id'])): // SI ESTÁ LOGUEADO ?>
+
+        <a href="<?= url('/actividades') ?>">Actividades</a>
+        <a href="<?= url('/habitos') ?>">Hábitos</a>
+        <a href="<?= url('/progreso') ?>">Progreso</a>
+
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Actividad física</a>
+            <div class="dropdown-menu">
+                <a href="<?= url('/deportes') ?>">Ejercicios</a>
+                <a href="<?= url('/rutinas') ?>">Rutinas</a>
+            </div>
         </div>
-    </div>
-    <div class="dropdown">
-        <a href="#" class="dropdown-toggle">Nutrición</a>
-        
-        <div class="dropdown-menu">
-            <a href="<?= url('/recetas') ?>">Recetas</a>
-            <a href="<?= url('/guia-nutricional') ?>" style="border-top: 1px solid var(--line);">Guía Nutricional</a>
+
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Nutrición</a>
+            <div class="dropdown-menu">
+                <a href="<?= url('/recetas') ?>">Recetario</a>
+                <a href="<?= url('/guia-nutricional') ?>">Guía Nutricional</a>
+                 <a href="<?= url('/articulos') ?>">Biblioteca</a>
+                <a href="<?= url('/glosario') ?>">Glosario</a>
+            </div>
         </div>
-    </div>
-    <div class="dropdown">
-        <a href="#" class="dropdown-toggle">
-            <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
-        </a>
-        <div class="dropdown-menu">
-            <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-            <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">
+                <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
+            </a>
+            <div class="dropdown-menu">
+                <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+                 <a href="<?= url('/mis-recetas') ?>">Mis Recetas</a>
+                <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+            </div>
         </div>
-    </div>
+
+    <?php else: // SI NO ESTÁ LOGUEADO (INVITADO) ?>
+        <a href="<?= url('/actividades') ?>">Actividades</a>
+        <a href="<?= url('/habitos') ?>">Hábitos</a>
+        <a href="<?= url('/articulos') ?>">Biblioteca</a>
+        <a href="<?= url('/login') ?>">Iniciar Sesión</a>
+        <a href="<?= url('/registro') ?>">Registrarse</a>
+        <?php endif; // Fin del if/else de sesión ?>
 </nav>
 </header>
 

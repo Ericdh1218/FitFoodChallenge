@@ -35,4 +35,33 @@ class DeportesController
             'filtros'    => $f,
         ]);
     }
+    /**
+     * ==========================================
+     * MÉTODO AJAX: Obtiene ejercicios aleatorios
+     * ==========================================
+     */
+    public function getRandomEjerciciosAjax()
+    {
+        if (!isset($_SESSION['usuario_id'])) { exit; } // Protección simple
+
+        $filters = [
+            'equipamiento' => $_GET['equipamiento'] ?? 'Sin Equipo',
+        ];
+        $limit = (int)($_GET['limit'] ?? 3); // Cambiado a 3 como en tu JS
+
+        $ejercicioModel = new Ejercicio();
+        // Llama al método static findByFilter
+        $ejercicios = Ejercicio::findByFilter($filters, $limit); 
+
+        // Captura de Salida (Buffer)
+        ob_start();
+        
+        // Carga la vista parcial con los nuevos ejercicios
+        partial('home._partial_ejercicio_cards', ['ejercicios' => $ejercicios]);
+        
+        $html = ob_get_clean(); // Obtiene el HTML
+
+        echo $html; // Devuelve el HTML
+        exit;
+    }
 }

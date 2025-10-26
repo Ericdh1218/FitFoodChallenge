@@ -18,6 +18,13 @@ if (file_exists($env)) {
         [$k,$v] = array_map('trim', explode('=', $line, 2));
         $_ENV[$k] = $v; putenv("$k=$v");
     }
+    if (file_exists($env)) {
+    foreach (file(...) as $line) {
+       // ... (código existente)
+       $_ENV[$k] = $v; putenv("$k=$v");
+    }
+    // =====================================
+}
 }
 
 // Debug

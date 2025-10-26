@@ -5,14 +5,21 @@
 ?>
 
 <h1 style="margin-bottom: 24px;">Recetario</h1>
-
+<div style="display: flex; gap: 10px;">
+        <a href="<?= url('/mis-recetas') ?>" class="btn primary"> Mis Recetas Creadas
+        </a>
+        <a href="<?= url('/recetas/crear') ?>" class="btn primary">
+            + Crear Receta
+        </a>
+    </div>
+</div>
 <div class="layout-sidebar-wrapper">
     
     <aside class="layout-sidebar">
         
         <form method="get" action="<?= url('/recetas') ?>">
             
-            <div class="form-group">
+            <div class="form-group"><br>
                 <label for="q">Buscar por nombre</label>
                 <input type="text" name="q" id="q" class="input" 
                        placeholder="Ej: Pollo, Avena..." 
@@ -34,7 +41,7 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-            
+    </div>
             <div class="form-group" style="margin-top: 20px;">
                 <label>Filtros Especiales</label>
                 <div class="filter-buttons">
@@ -84,22 +91,39 @@
                 
                 <?php foreach ($recetas as $receta): ?>
                     <article class="card">
-                        <?php
-                        $img = $receta['imagen'];
-                        if ($img && !preg_match('~^https?://~', $img)) {
-                            $img = url('assets/img/' . $img); 
-                        }
-                        $detalleUrl = url('/receta?id=' . $receta['id']);
-                        ?>
+                    <?php
+                    // --- LÓGICA COMPLETA PARA DETERMINAR LA RUTA DE LA IMAGEN ---
+                    $img = $receta['imagen'] ?? null;
+                    $imgSrc = null; // Variable para la URL final
 
-                        <?php if (!empty($img)): ?>
-                            <a href="<?= htmlspecialchars($detalleUrl) ?>" class="card-image-link">
-                                <div style="border-radius:12px;overflow:hidden; aspect-ratio: 16/10; background: #333;">
-                                    <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($receta['titulo']) ?>"
-                                         style="width:100%;height:100%;object-fit:cover;">
-                                </div>
-                            </a>
-                        <?php endif; ?>
+                    if ($img) {
+                        // 1. Verifica si es una URL completa
+                        if (preg_match('~^https?://~', $img)) {
+                            $imgSrc = $img;
+                        }
+                        // 2. Verifica si es imagen de usuario (TIENE user_id y '_')
+                        //    (Aunque esta página solo muestra predefinidas, la lógica completa es más segura)
+                        elseif (isset($receta['user_id']) && $receta['user_id'] !== null && strpos($img, '_') !== false) {
+                            $imgSrc = url('assets/img/recetas_usuario/' . $img);
+                        }
+                        // 3. Si no, es predefinida (¡CORREGIDO con la barra!)
+                        else {
+                            $imgSrc = url('assets/img/recetas/' . $img); // <-- RUTA CORRECTA PARA PREDEFINIDAS
+                        }
+                    }
+                    // --- FIN LÓGICA IMAGEN ---
+
+                    $detalleUrl = url('/receta?id=' . $receta['id']);
+                    ?>
+
+                    <?php if ($imgSrc): ?>
+                        <a href="<?= htmlspecialchars($detalleUrl) ?>" class="card-image-link">
+                            <div style="border-radius:12px;overflow:hidden; aspect-ratio: 16/10; background: #333;">
+                                <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($receta['titulo']) ?>"
+                                     style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                        </a>
+                    <?php endif; ?>
                         
                         <span class="tag" style="margin-top: 16px;"><?= htmlspecialchars(ucfirst($receta['categoria'] ?? 'General')) ?></span>
                         <h3 style="margin: 8px 0;"><?= htmlspecialchars($receta['titulo']) ?></h3>

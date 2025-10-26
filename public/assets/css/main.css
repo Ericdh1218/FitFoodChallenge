@@ -1107,3 +1107,156 @@ border: 0;
 .btn-marcar-leido:hover {
   border-bottom-color: var(--brand-2);
 }
+/* ===================================
+ * Estilos para la Página de Glosario
+ * =================================== */
+.glosario-letra-section { margin-bottom: 32px; }
+.glosario-letra-section h2 {
+    border-bottom: 2px solid var(--brand-2);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    color: var(--brand-2);
+}
+.glosario-termino {
+    margin-bottom: 16px;
+    padding: 16px;
+}
+.glosario-termino h3 { margin: 0 0 8px 0; }
+.glosario-termino p { margin: 0; line-height: 1.6; }
+
+/* ===================================
+ * Estilos para Página de Hábitos
+ * =================================== */
+.checkin-completo {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--brand); /* Verde */
+    font-weight: 600;
+    margin: 20px 0 10px 0;
+}
+.habitos-registrados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+}
+.tag-verde {
+    background: var(--brand);
+    color: var(--bg);
+    border-color: var(--brand);
+}
+.historial-lista {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+.historial-lista li {
+    background: var(--card);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    border-left: 3px solid var(--brand-2); /* Línea cian a la izquierda */
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+.historial-lista li strong {
+    color: var(--text);
+}
+/* Estilo para mensaje de historial vacío */
+.section .historial-lista + .muted { /* Aplica si .historial-lista está vacío y hay un .muted después */
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+/* O una regla más simple si el <p> está siempre presente */
+.section > p.muted:only-child { /* Si el <p> es el ÚNICO hijo directo del .section */
+   text-align: center;
+   padding: 20px;
+   font-style: italic;
+   color: var(--muted); /* Asegura el color */
+}
+/* ===================================
+ * Estilos para Historial Reciente (Revisado)
+ * =================================== */
+
+.historial-container {
+  /* No necesita fondo ni borde propio */
+}
+
+.historial-container h2 {
+  /* Estilo similar a otros títulos de sección */
+  font-family: Poppins, Inter, sans-serif;
+  margin-bottom: 16px; /* Espacio debajo del título */
+  border-bottom: 1px solid var(--line); /* Línea divisoria sutil */
+  padding-bottom: 8px;
+}
+
+/* Estilo para mensaje de historial vacío */
+.historial-vacio-mensaje {
+  text-align: center;
+  font-style: italic;
+  margin: 20px 0; /* Espacio vertical */
+  padding: 10px 0;
+  color: var(--muted);
+}
+
+/* Lista del historial */
+.historial-lista {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+
+/* Items del historial */
+.historial-lista li {
+    /* Quita fondo y borde de tarjeta */
+    /* background: var(--card); */
+    padding: 10px 0; /* Solo padding vertical */
+    border-radius: 0; /* Sin bordes redondeados */
+    margin-bottom: 8px;
+    /* Mantiene la línea izquierda si te gusta */
+    /* border-left: 3px solid var(--brand-2); */
+    /* padding-left: 10px; */
+    border-bottom: 1px solid var(--line); /* Línea divisoria entre items */
+    color: var(--text); /* Texto principal más visible */
+    font-size: 0.95rem;
+}
+.historial-lista li:last-child {
+    border-bottom: none; /* Quita la línea del último item */
+}
+
+.historial-lista li strong {
+    color: var(--text); /* Asegura que la fecha sea visible */
+    font-weight: 600; /* Un poco más grueso */
+}
+
+/* ===================================
+ * Estilos Mejorados para Trivia
+ * =================================== */
+
+/* Texto de la pregunta (p.trivia-pregunta) */
+.trivia-pregunta {
+  color: var(--text) !important; /* Fuerza el color blanco/claro */
+  font-size: 1.1rem; /* Un poco más grande */
+  font-weight: 500;
+}
+
+/* Botones de opción de la trivia */
+.trivia-btn {
+  color: var(--text) !important; /* Fuerza el color blanco/claro */
+  text-align: left; /* Alinea el texto a la izquierda */
+  justify-content: flex-start !important; /* Alinea el texto a la izquierda */
+}
+
+/* Feedback (para que se lea el texto del feedback) */
+.trivia-feedback p {
+  color: var(--muted); /* Asegura que el texto de feedback sea legible */
+}
+
+/* Botón "Siguiente Pregunta" (lo añadiremos en el HTML) */
+#triviaBtnSiguiente {
+  display: none; /* Oculto por defecto */
+  margin-top: 16px;
+  width: 100%;
+}

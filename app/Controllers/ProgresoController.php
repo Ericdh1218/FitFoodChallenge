@@ -14,29 +14,43 @@ class ProgresoController
      */
     public function index()
     {
-        // 1. Proteger la ruta
-        if (!isset($_SESSION['usuario_id'])) {
-            header('Location: ' . url('/login'));
-            exit;
+        if (!isset($_SESSION['usuario_id'])) { 
+            header('Location: ' . url('/login')); // Redirige a login
+            exit;                               // Detiene la ejecución aquí
         }
-
-        $userId = $_SESSION['usuario_id'];
-        $userModel = new User();
         
-        // 2. Buscar los datos del usuario (para saber sus objetivos)
+        $userId = $_SESSION['usuario_id'];
+        $fechaHoy = date('Y-m-d'); // Fecha de hoy
+
+        // === INSTANCIAR MODELOS ===
+        $userModel = new User();
+        $habitoModel = new HabitoRegistro();
+        $medidasModel = new MedidasRegistro();
+        // ==========================
+        
+        // 1. Buscar datos del usuario (para objetivos)
         $usuario = $userModel->findById($userId);
         
-        // 3. (Añadiremos esto después)
-        // Buscar si ya tiene un registro de hábitos para HOY
-        // $registroHoy = ...
+        // === 2. BUSCAR REGISTRO DE HOY ===
+        $registroHoy = $habitoModel->findByDate($userId, $fechaHoy);
+        // =================================
+        
+        // === 3. BUSCAR HISTORIAL RECIENTE ===
+        $historialHabitos = $habitoModel->getRecentHistory($userId, 5); // Últimos 5 días
+        $historialPeso = $medidasModel->getRecentHistory($userId, 3); // Últimos 3 registros de peso
+        // ==================================
+
+        // Combinar y ordenar historial (opcional, si quieres mostrarlo mezclado)
+        // Por ahora los pasamos separados.
 
         view('home/progreso', [
-            'title'   => 'Mi Progreso',
-            'usuario' => $usuario
-            // 'registroHoy' => $registroHoy (próximamente)
+            'title'          => 'Mi Progreso',
+            'usuario'        => $usuario,
+            'registroHoy'    => $registroHoy, // Pasamos el registro de hoy
+            'historialHabitos' => $historialHabitos, // Pasamos historial de hábitos
+            'historialPeso'  => $historialPeso   // Pasamos historial de peso
         ]);
     }
-
     public function store()
     {
         // 1. Verificar sesión

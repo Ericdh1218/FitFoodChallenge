@@ -102,5 +102,78 @@ class Ejercicio
                     ->fetchAll(PDO::FETCH_COLUMN);
         return array_values(array_filter($rows));
     }
+    
+    /**
+     * ==========================================
+     * NUEVO MÉTODO: Busca ejercicios por filtros específicos
+     * (¡El que faltaba!)
+     * ==========================================
+     */
+    public static function findByFilter(array $filters, int $limit = 4): array
+    {
+        $pdo = DB::conn(); // Llama a la conexión
 
+        $sql = "SELECT id, nombre, descripcion, media_url, grupo_muscular, equipamiento
+                FROM ejercicios
+                WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['equipamiento'])) {
+            $sql .= " AND equipamiento = :equipamiento";
+            $params[':equipamiento'] = $filters['equipamiento'];
+        }
+        if (!empty($filters['tipo_entrenamiento'])) {
+            $sql .= " AND tipo_entrenamiento = :tipo_entrenamiento";
+            $params[':tipo_entrenamiento'] = $filters['tipo_entrenamiento'];
+        }
+        
+        // Asumiendo que las recetas predefinidas no tienen user_id
+        // (Ajusta si tienes 'user_id' en la tabla 'ejercicios')
+        // $sql .= " AND user_id IS NULL"; 
+
+        $sql .= " ORDER BY RAND() LIMIT :limit"; // Aleatorios
+        $params[':limit'] = $limit;
+        
+        $st = $pdo->prepare($sql);
+        $st->execute($params);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (AJAX): Obtiene ejercicios aleatorios
+     * y devuelve solo el HTML de las tarjetas.
+     * ==========================================
+     */
+    public function getRandomEjerciciosAjax()
+    {
+        // (Opcional: podrías añadir protección de sesión aquí)
+        // if (!isset($_SESSION['usuario_id'])) { exit; }
+
+        // Filtros (podemos leerlos de $_GET si queremos ser flexibles)
+        $filters = [
+            'equipamiento' => $_GET['equipamiento'] ?? 'Sin Equipo',
+        ];
+        $limit = (int)($_GET['limit'] ?? 4);
+
+        $ejercicioModel = new Ejercicio();
+        $ejercicios = $ejercicioModel->findByFilter($filters, $limit);
+
+        // --- Captura de Salida ---
+        // Inicia un buffer para "capturar" el HTML que genera la vista parcial
+        ob_start();
+        
+        // Carga una vista "parcial" (un archivo solo con el bucle foreach)
+        // Pasamos las variables que la vista parcial necesitará
+        view('home/_partial_ejercicio_cards', [
+            'ejercicios' => $ejercicios
+        ]);
+        
+        // Obtiene el HTML capturado y limpia el buffer
+        $html = ob_get_clean();
+        // -------------------------
+
+        // Devuelve el HTML
+        echo $html;
+        exit;
+    }
 }

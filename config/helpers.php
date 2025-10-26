@@ -41,3 +41,26 @@ function view(string $template, array $data = [])
     }
     include BASE_PATH . '/app/Views/layouts/main.php';
 }
+/**
+ * Renderiza una vista "parcial" (solo el archivo) sin el layout principal.
+ * Se usa para AJAX o para incluir vistas dentro de otras vistas.
+ *
+ * @param string $viewName El nombre de la vista (ej. 'home._partial_ejercicio_cards')
+ * @param array $data Los datos a pasar a la vista
+ */
+function partial(string $viewName, array $data = [])
+{
+    // Extrae los datos para que estén disponibles como variables en la vista
+    extract($data); 
+    
+    // Construye la ruta al archivo de la vista
+    $viewFile = BASE_PATH . '/app/Views/' . str_replace('.', '/', $viewName) . '.php';
+    
+    if (file_exists($viewFile)) {
+        // Incluye SÓLO el archivo de la vista, sin main.php
+        include $viewFile; 
+    } else {
+        // Muestra un error si el archivo parcial no se encuentra
+        echo "<p style='color:red;'>Error: Vista parcial no encontrada: {$viewFile}</p>";
+    }
+}

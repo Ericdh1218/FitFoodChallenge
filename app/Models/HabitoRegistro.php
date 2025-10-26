@@ -2,6 +2,8 @@
 namespace App\Models;
 
 use App\Config\DB;
+
+use App\Models\Trivia;
 use PDO;
 
 class HabitoRegistro
@@ -49,5 +51,33 @@ class HabitoRegistro
             ':sueno_update'  => $data['sueno_cumplido'],
             ':entrenamiento_update' => $data['entrenamiento_cumplido']
         ]);
+    }
+
+    public function findByDate(int $userId, string $fecha): ?array
+    {
+        $sql = "SELECT * FROM habitos_registro WHERE user_id = :user_id AND fecha = :fecha";
+        $st = $this->pdo->prepare($sql);
+        $st->execute([':user_id' => $userId, ':fecha' => $fecha]);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /**
+     * Obtiene los últimos N registros de hábitos para un usuario.
+     */
+    public function getRecentHistory(int $userId, int $limit = 5): array
+    {
+        $sql = "SELECT fecha, agua_cumplido, sueno_cumplido, entrenamiento_cumplido 
+                FROM habitos_registro 
+                WHERE user_id = :user_id 
+                ORDER BY fecha DESC 
+                LIMIT :limit";
+        $st = $this->pdo->prepare($sql);
+        // bindParam necesita variables, por eso asignamos $limit a una var local
+        $lim = $limit; 
+        $st->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $st->bindParam(':limit', $lim, PDO::PARAM_INT); 
+        $st->execute();
+        return $st->fetchAll(PDO::FETCH_ASSOC);
     }
 }
