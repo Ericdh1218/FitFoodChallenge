@@ -114,4 +114,10 @@ public function updateBiometrics(int $id, float $peso, float $imc): bool
         ':id'   => $id
     ]);
 }
+public function addXp(int $userId, int $xpAmount): bool
+    {
+        $sql = "UPDATE users SET xp = xp + :xp WHERE id = :id";
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([':xp' => $xpAmount, ':id' => $userId]);
+    }
 }

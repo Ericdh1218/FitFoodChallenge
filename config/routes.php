@@ -15,6 +15,7 @@ use App\Controllers\GlosarioController;
 use App\Controllers\AlimentosController;
 use App\Controllers\PlanController;
 use App\Controllers\TriviaController;
+use App\Controllers\DesafioController;
 
 $router->get('/trivia/pregunta-aleatoria', [TriviaController::class, 'getRandomQuestionAjax']);
 
@@ -33,8 +34,6 @@ $router->get('/actividades', [ActividadesController::class,'index']);
 $router->get('/habitos', [HabitosController::class,'index']);
 $router->get('/habitos/plan', [HabitosController::class, 'showPlan']);
 $router->post('/habitos/advance-step', [HabitosController::class, 'advancePlanStep']);
-
-$router->get('/progreso', [ProgresoController::class,'index']);
 
 $router->get('/ejercicios/aleatorios', [DeportesController::class, 'getRandomEjerciciosAjax']);
 $router->get('/deportes', [DeportesController::class,'index']);
@@ -63,9 +62,14 @@ $router->get('/articulo', [ArticulosController::class, 'show']);
 $router->get('/glosario', [GlosarioController::class, 'index']);
 $router->get('/glosario', [GlosarioController::class, 'index']);
 
+$router->get('/progreso', [ProgresoController::class,'index']);
 $router->post('/progreso', [ProgresoController::class,'store']);
 $router->post('/progreso/checkin', [ProgresoController::class, 'saveCheckin']);
-
+$router->post('/progreso/guardar-peso', [ProgresoController::class,'savePeso']);
+$router->post('/progreso/eliminar-foto', [ProgresoController::class, 'deletePhoto']);
+// Añade la ruta para subir fotos
+$router->post('/progreso/subir-foto', [ProgresoController::class, 'uploadPhoto']);
+$router->get('/progreso/checkin/editar', [ProgresoController::class, 'editCheckin']);
 
 $router->get('/recetas', [RecetasController::class, 'index']);
 $router->get('/receta', [RecetasController::class, 'show']);
@@ -75,3 +79,11 @@ $router->post('/recetas/crear', [RecetasController::class, 'store']); // Guarda 
 $router->get('/alimentos', [AlimentosController::class, 'index']); // Llama al método index
 $router->get('/alimentos/buscar', [AlimentosController::class, 'buscar']); // Ruta AJAX (ya la tienes)
 $router->get('/recetas/crear', [RecetasController::class, 'create']); // Muestra form para crear
+
+$router->get('/desafios', [DesafioController::class, 'index']); // Página con lista de todos los desafíos
+$router->get('/desafios/ver', [DesafioController::class, 'show']); // Detalle de un desafío (ej. /desafios/ver?codigo=reto-7x7)
+$router->post('/desafios/unirse', [DesafioController::class, 'join']);
+
+$router->get('/actividades/refrescar', [ActividadesController::class, 'refrescarNeat']);
+$router->post('/actividades/completar', [ActividadesController::class, 'completarNeat']);
+$router->post('/actividades/completar', [ActividadesController::class, 'completarNeat']);

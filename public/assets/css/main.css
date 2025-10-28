@@ -1260,3 +1260,38 @@ border: 0;
   margin-top: 16px;
   width: 100%;
 }
+canvas {
+    max-height: 100%;
+    max-width: 100%;
+    display: block;
+}
+/* ... (Estilos de .galeria-progreso y .foto-item) ... */
+.foto-item {
+    position: relative; /* Necesario para el botón absoluto */
+    /* ... (tus otros estilos) ... */
+}
+
+/* === ESTILO PARA EL BOTÓN 'X' === */
+.btn-delete-foto {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 1.3rem; /* Tamaño de la 'X' */
+    font-weight: bold;
+    line-height: 28px; /* Centra la 'X' verticalmente */
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    z-index: 10;
+}
+.btn-delete-foto:hover {
+    background: var(--danger); /* Se pone rojo al pasar el mouse */
+}
+/* ============================== */

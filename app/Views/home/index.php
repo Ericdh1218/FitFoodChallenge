@@ -1,49 +1,58 @@
 <section class="hero">
-  <div class="hero-text">
-    <h1>Actívate hoy. <span>Cuida tu cuerpo</span> y tu mente.</h1>
-    <p>Mini retos diarios de movimiento y hábitos saludables para jóvenes. Sin equipo, sin excusas.</p>
-    <a class="btn primary" href="<?= url('/actividades') ?>">Explorar actividades</a>
-    <a class="btn ghost" href="<?= url('/habitos') ?>">Ver hábitos</a>
-  </div>
-  <div class="hero-stats">
-    <div class="stat"><strong id="streak">0</strong><span>días de racha</span></div>
-    <div class="stat"><strong id="minutes">0</strong><span>min de actividad</span></div>
-    <div class="stat"><strong id="water">0</strong><span>vasos de agua</span></div>
-  </div>
+    <div class="hero-text">
+        <h1>Actívate hoy. <span class="text-brand">Cuida tu cuerpo</span> y tu mente.</h1>
+        <p>Mini retos diarios de movimiento y hábitos saludables...</p>
+        <div>
+            <a href="<?= url('/deportes') ?>" class="btn primary">Explorar actividades</a> 
+            <a href="<?= url('/habitos') ?>" class="btn ghost">Ver hábitos</a> 
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="stat"><strong>0</strong> <span>días de racha</span></div>
+        <div class="stat"><strong>0</strong> <span>min de actividad</span></div>
+        <div class="stat"><strong>0</strong> <span>vasos de agua</span></div>
+    </div>
 </section>
 
-<section class="grid cards">
-  <article class="card">
-    <h3>Reto 7x7</h3>
-    <p>7 minutos de actividad durante 7 días seguidos. ¡Empieza hoy!</p>
-    <a href="<?= url('/actividades') ?>" class="link">Comenzar →</a>
-  </article>
-  <article class="card">
-    <h3>Plato Semáforo</h3>
-    <p>Aprende a equilibrar tus comidas usando la guía visual por colores.</p>
-    <a href="<?= url('/habitos') ?>" class="link">Ver guía →</a>
-  </article>
-  <article class="card">
-    <h3>Mi Progreso</h3>
-    <p>Lleva el registro de tu actividad física y hábitos diarios.</p>
-    <a href="<?= url('/progreso') ?>" class="link">Abrir panel →</a>
-  </article>
-</section>
+<div class="grid cards" style="margin-top: 28px;">
 
-<section class="grid cards">
-  <article class="card">
-    <h3>Logros diarios</h3>
-    <p>Desbloquea insignias por mantenerte activo y beber agua suficiente.</p>
-  </article>
-  <article class="card">
-    <h3>Reto de agua</h3>
-    <p>Bebe al menos 6 vasos de agua diarios y mejora tu energía.</p>
-  </article>
-  <article class="card">
-    <h3>Desayuno saludable</h3>
-    <p>Ideas simples para comenzar tu día con proteína y fruta.</p>
-  </article>
-</section>
+    <article class="card">
+        <h3>Reto 7x7</h3>
+        <p>7 minutos de actividad durante 7 días seguidos. ¡Empieza hoy!</p>
+        <a href="<?= url('/desafios/ver?codigo=reto-7x7') ?>" class="link">Comenzar →</a> 
+    </article>
+
+    <article class="card">
+        <h3>Guia nutricional</h3>
+        <p>Aprende lo basico de como mejorar tu alimentacion.</p>
+        <a href="<?= url('/guia-nutricional') ?>" class="link">Ver guía →</a> 
+    </article>
+
+    <article class="card">
+        <h3>Mi Progreso</h3>
+        <p>Lleva el registro de tu actividad física y hábitos diarios.</p>
+        <a href="<?= url('/progreso') ?>" class="link">Abrir panel →</a> 
+    </article>
+
+    <article class="card">
+        <h3>Logros diarios</h3>
+        <p>Desbloquea insignias por mantenerte activo y beber agua suficiente.</p>
+        <a href="<?= url('/logros') ?>" class="link">Ver mis logros →</a> 
+    </article>
+    
+    <article class="card">
+        <h3>Reto de agua</h3>
+        <p>Bebe al menos 6 vasos de agua diarios y mejora tu energía.</p>
+        <a href="<?= url('/desafios/ver?codigo=reto-agua') ?>" class="link">Unirme al reto →</a>
+    </article>
+
+    <article class="card">
+        <h3>Desayuno saludable</h3>
+        <p>Ideas simples para comenzar tu día con proteína y fruta.</p>
+        <a href="<?= url('/habitos/plan?area=desayuno') ?>" class="link">Ver ideas →</a> 
+    </article>
+    
+</div>
 
 <section class="card" style="margin-top:40px">
   <h2 style="margin-top:0">¿Qué es FitFoodChallenge?</h2>

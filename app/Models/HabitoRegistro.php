@@ -80,4 +80,25 @@ class HabitoRegistro
         $st->execute();
         return $st->fetchAll(PDO::FETCH_ASSOC);
     }
+    // En HabitoRegistro.php
+
+// ... (constructor, findByDate, getRecentHistory, saveCheckin) ...
+
+// AÑADE ESTA FUNCIÓN:
+public function getHistoryForChart(int $userId, int $days = 30): array
+{
+    // Suma los hábitos cumplidos por día
+    $sql = "SELECT 
+                fecha, 
+                SUM(agua_cumplido) as agua, 
+                SUM(sueno_cumplido) as sueno, 
+                SUM(entrenamiento_cumplido) as entrenamiento
+            FROM habitos_registro
+            WHERE user_id = :user_id AND fecha >= DATE_SUB(CURDATE(), INTERVAL :days DAY)
+            GROUP BY fecha
+            ORDER BY fecha ASC";
+    $st = $this->pdo->prepare($sql);
+    $st->execute([':user_id' => $userId, ':days' => $days]);
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
 }
