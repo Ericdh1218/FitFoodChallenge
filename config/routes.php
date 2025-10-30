@@ -16,6 +16,7 @@ use App\Controllers\AlimentosController;
 use App\Controllers\PlanController;
 use App\Controllers\TriviaController;
 use App\Controllers\DesafioController;
+use App\Controllers\RankingController;
 
 $router->get('/trivia/pregunta-aleatoria', [TriviaController::class, 'getRandomQuestionAjax']);
 
@@ -46,6 +47,7 @@ $router->post('/rutina/agregar-ejercicio', [RutinasController::class, 'addEjerci
 $router->post('/rutina/eliminar', [RutinasController::class, 'delete']);
 $router->post('/rutina/quitar-ejercicio', [RutinasController::class, 'removeEjercicio']);
 $router->get('/mi-rutina', [RutinasController::class, 'showPersonal']);
+$router->post('/rutinas/completar', [RutinasController::class, 'completarRutina']);
 
 $router->get('/registro', [RegistroController::class, 'show']);
 $router->post('/registro', [RegistroController::class, 'store']);
@@ -87,3 +89,5 @@ $router->post('/desafios/unirse', [DesafioController::class, 'join']);
 $router->get('/actividades/refrescar', [ActividadesController::class, 'refrescarNeat']);
 $router->post('/actividades/completar', [ActividadesController::class, 'completarNeat']);
 $router->post('/actividades/completar', [ActividadesController::class, 'completarNeat']);
+
+$router->get('/ranking', [RankingController::class, 'index']);

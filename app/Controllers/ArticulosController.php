@@ -103,6 +103,9 @@ class ArticulosController
 
         $model = new Articulo();
         $model->markAsRead($userId, $articuloId);
+        $xpPorLectura = 20; // Define cuántos puntos dar
+        $userModel = new User();
+        $resultadoXp = $userModel->addXp($userId, $xpPorLectura);
 
         $_SESSION['flash_message'] = "¡Artículo marcado como leído!";
 

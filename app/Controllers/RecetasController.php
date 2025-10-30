@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use App\Services\FdcApiService;
 use App\Models\Receta;
-
+use App\Models\User;
 class RecetasController
 {
     /**
@@ -257,9 +257,15 @@ class RecetasController
              view('home/recetas_crear', [ /* ... error ... */ 'error' => 'Error al guardar los ingredientes.' ]);
              return;
         }
-        
+        $xpPorCrearReceta = 25; // Puntos por crear una receta
+        $userModel = new User();
+        $resultadoXp = $userModel->addXp($userId, $xpPorCrearReceta);
+        if ($resultadoXp['subio_de_nivel']) {
+            $_SESSION['flash_message'] = "¡Receta creada! ¡Subiste a: Nivel {$resultadoXp['nombre_nuevo_nivel']}! (+{$xpPorCrearReceta} XP)";
+        } else {
+            $_SESSION['flash_message'] = "¡Receta creada con éxito! Ganaste +{$xpPorCrearReceta} XP.";
+        }
         // 6. Redirigir (ej. a la lista de recetas o al detalle de la nueva)
-        $_SESSION['flash_message'] = '¡Receta creada con éxito!';
         header('Location: ' . url('/mis-recetas')); // Redirige a la lista
         exit;
     }

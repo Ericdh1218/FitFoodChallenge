@@ -35,9 +35,9 @@
     </article>
 
     <article class="card">
-        <h3>Logros diarios</h3>
-        <p>Desbloquea insignias por mantenerte activo y beber agua suficiente.</p>
-        <a href="<?= url('/logros') ?>" class="link">Ver mis logros →</a> 
+        <h3>Ranking e Insignias</h3>
+        <p>Desbloquea insignias por mantenerte activo y realizar mejoras en tus habitos y se el mejor del ranking.</p>
+        <a href="<?= url('/ranking') ?>" class="link">Ver ranking e insignias →</a> 
     </article>
     
     <article class="card">

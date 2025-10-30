@@ -58,10 +58,11 @@
         <?php else: ?>
             <form action="<?= url('/articulo/marcar-leido') ?>" method="POST">
                 <input type="hidden" name="articulo_id" value="<?= $articulo['id'] ?>">
-                <button type="submit" class="btn ghost">
+                
+                <button type="submit" class="btn ghost" style="color: var(--brand-2); border-color: var(--brand-2);"> 
                     Marcar como leído
                 </button>
-            </form>
+                </form> 
         <?php endif; ?>
     </div>
 

@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-
+use App\Models\User;
 use App\Models\Rutina;
 use App\Models\Ejercicio;
 class RutinasController
@@ -116,6 +116,14 @@ class RutinasController
         $nuevaRutinaId = $rutinaModel->createPersonal($userId, $nombreRutina);
 
        if ($nuevaRutinaId) {
+        $xpPorCrearRutina = 20; // Puntos por crear una rutina
+            $userModel = new User();
+            $resultadoXp = $userModel->addXp($userId, $xpPorCrearRutina);
+            if ($resultadoXp['subio_de_nivel']) {
+                $_SESSION['flash_message'] = "¡Rutina creada! ¡Subiste a: Nivel {$resultadoXp['nombre_nuevo_nivel']}! (+{$xpPorCrearRutina} XP)";
+            } else {
+                $_SESSION['flash_message'] = "¡Rutina creada! Ganaste +{$xpPorCrearRutina} XP.";
+            }
             // Éxito: Redirigir a la página para añadir ejercicios
             header('Location: ' . url('/rutina/editar?id=' . $nuevaRutinaId));// <-- CAMBIO AQUÍ
             exit;
@@ -342,5 +350,33 @@ class RutinasController
             'rutina'     => $rutina,
             'ejercicios' => $ejercicios
         ]);
+    }
+    public function completarRutina()
+    {
+        header('Content-Type: application/json');
+        $respondJson = fn($data) => exit(json_encode($data));
+        
+        if (!isset($_SESSION['usuario_id'])) {
+            return $respondJson(['success' => false, 'message' => 'Acceso denegado.']);
+        }
+        $userId = $_SESSION['usuario_id'];
+        $rutinaId = (int)($_POST['rutina_id'] ?? 0);
+        $xpPorRutina = 30; // Puntos por completar una rutina
+
+        if (!$rutinaId) {
+            return $respondJson(['success' => false, 'message' => 'ID de rutina no válido.']);
+        }
+
+        $userModel = new User();
+        $resultadoXp = $userModel->addXp($userId, $xpPorRutina);
+
+        $mensaje = "¡Rutina completada! Ganaste +{$xpPorRutina} XP.";
+        if ($resultadoXp['subio_de_nivel']) {
+            $mensaje = "¡RUTINA COMPLETADA! Subiste a: Nivel {$resultadoXp['nombre_nuevo_nivel']}! (+{$xpPorRutina} XP)";
+        }
+
+        // (Aquí podríamos llamar a BadgeService para insignias de "Completó 5 rutinas", etc.)
+
+        return $respondJson(['success' => true, 'message' => $mensaje]);
     }
 }

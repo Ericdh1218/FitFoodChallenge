@@ -8,6 +8,9 @@ use App\Models\MedidasRegistro;
 use App\Models\HabitoRegistro;
 use App\Models\DesafioUsuario;
 use App\Models\ProgresoFoto;
+use App\Services\BadgeService;
+use App\Models\Insignia;    
+
 class ProgresoController
 {
     /**
@@ -25,37 +28,63 @@ class ProgresoController
         $userModel = new User();
         $habitoModel = new HabitoRegistro();
         $medidasModel = new MedidasRegistro();
-        $fotoModel = new ProgresoFoto(); // <-- Nuevo
+        $fotoModel = new ProgresoFoto();
+        $insigniaModel = new Insignia();
         // ==========================
         
-        $usuario = $userModel->findById($userId);
+        $usuario = $userModel->findById($userId); // Contiene $usuario['xp'] y $usuario['level']
         $registroHoy = $habitoModel->findByDate($userId, $fechaHoy);
         
-        // === DATOS PARA GRÁFICAS ===
-        // 1. Historial de Peso (para la gráfica)
-        // (Necesitamos modificar getRecentHistory para que ordene ASC por fecha)
+        // ... (Datos para gráficas y fotos) ...
         $historialPeso = $medidasModel->getHistoryForChart($userId);
-        $pesoDataJs = json_encode($historialPeso); // Convertir a JSON para JS
-
-        // 2. Historial de Hábitos (para la gráfica)
-        // (Necesitamos una nueva función en HabitoRegistro)
-        $historialHabitos = $habitoModel->getHistoryForChart($userId, 30); // Últimos 30 días
-        $habitosDataJs = json_encode($historialHabitos); // Convertir a JSON para JS
-        // ==========================
-
-        // === FOTOS DE PROGRESO ===
+        $pesoDataJs = json_encode($historialPeso);
+        $historialHabitos = $habitoModel->getHistoryForChart($userId, 30);
+        $habitosDataJs = json_encode($historialHabitos);
         $fotos = $fotoModel->findByUserId($userId);
-        // =======================
+
+        $insignias = $insigniaModel->findInsigniasByUserId($userId);
+
+        // === NUEVA LÓGICA DE GAMIFICACIÓN ===
+        $nivelActualNum = $usuario['level'] ?? 1;
+        $xpActual = $usuario['xp'] ?? 0;
+
+        // Obtener info del nivel actual (nombre y XP de inicio)
+        $infoNivelActual = $userModel->getLevelInfo($nivelActualNum);
+        $nombreNivel = $infoNivelActual['nombre_nivel'] ?? 'Principiante';
+        $xpInicioNivel = $infoNivelActual['xp_requerido'] ?? 0;
+        
+        // Obtener info del siguiente nivel (XP requerido)
+        $xpSiguienteNivel = $userModel->getNextLevelXp($nivelActualNum);
+        
+        // Si no hay siguiente nivel (es nivel max), la barra se llena al 100%
+        if ($xpSiguienteNivel === null) {
+            $xpSiguienteNivel = $xpInicioNivel; // Evita división por cero
+            $porcentajeProgreso = 100;
+        } else {
+            $xpTotalParaSubir = $xpSiguienteNivel - $xpInicioNivel;
+            $xpEnEsteNivel = $xpActual - $xpInicioNivel;
+            $porcentajeProgreso = ($xpTotalParaSubir > 0) ? ($xpEnEsteNivel / $xpTotalParaSubir) * 100 : 100;
+        }
+        // ======================================
 
         view('home/progreso', [
             'title'          => 'Mi Progreso',
             'usuario'        => $usuario,
             'registroHoy'    => $registroHoy,
-            'historialHabitos' => $historialHabitos, // Para la lista (puedes quitarlo si no lo usas)
-            'historialPeso'  => $historialPeso,  // Para la lista (puedes quitarlo)
-            'pesoDataJs'     => $pesoDataJs,     // Para la gráfica
-            'habitosDataJs'  => $habitosDataJs,  // Para la gráfica
-            'fotos'          => $fotos           // Para la galería
+            'historialHabitos' => $historialHabitos, 
+            'historialPeso'  => $historialPeso,
+            'pesoDataJs'     => $pesoDataJs,
+            'habitosDataJs'  => $habitosDataJs,
+            'fotos'          => $fotos,
+            
+            // --- NUEVOS DATOS PARA LA VISTA ---
+            'nombreNivel'        => $nombreNivel,
+            'xpActual'           => $xpActual,
+            'xpSiguienteNivel'   => $xpSiguienteNivel,
+            'xpInicioNivel'      => $xpInicioNivel,
+            'porcentajeProgreso' => $porcentajeProgreso,
+            'insignias'      => $insignias
+            // --- FIN NUEVOS DATOS ---
         ]);
     }
     public function store()
@@ -98,56 +127,112 @@ class ProgresoController
         header('Location: ' . url('/micuenta'));
         exit;
     }
-public function saveCheckin()
-{
-    if (!isset($_SESSION['usuario_id'])) {
-        header('Location: ' . url('/login'));
-        exit;
-    }
+// En app/Controllers/ProgresoController.php
 
-    $userId = $_SESSION['usuario_id'];
-    $fechaHoy = date('Y-m-d');
-    
-    $data = [
-        'agua_cumplido'          => isset($_POST['agua_cumplido']) ? 1 : 0,
-        'sueno_cumplido'         => isset($_POST['sueno_cumplido']) ? 1 : 0,
-        'entrenamiento_cumplido' => isset($_POST['entrenamiento_cumplido']) ? 1 : 0,
-    ];
-    
-    // 1. Guardar el registro de hábito diario (como antes)
-    $habitoModel = new HabitoRegistro();
-    // (Asegúrate de que la función findByDate exista en HabitoRegistro)
-    $registroPrevio = $habitoModel->findByDate($userId, $fechaHoy); 
-    $habitoModel->saveCheckin($userId, $fechaHoy, $data);
+    public function saveCheckin()
+    {
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: ' . url('/login'));
+            exit;
+        }
 
-    // 2. === NUEVA LÓGICA DE DESAFÍOS ===
-    // Solo actualiza desafíos si este es el PRIMER check-in del día
-    // para evitar que el usuario haga trampa (marcar/desmarcar/marcar)
-    if (!$registroPrevio || $registroPrevio['completado_hoy'] == 0) { // Asumimos una columna 'completado_hoy' o similar
-        // (Simplificación por ahora: actualizamos siempre que se marque)
+        $userId = $_SESSION['usuario_id'];
+        $fechaHoy = date('Y-m-d');
         
+        $data = [
+            'agua_cumplido'          => isset($_POST['agua_cumplido']) ? 1 : 0,
+            'sueno_cumplido'         => isset($_POST['sueno_cumplido']) ? 1 : 0,
+            'entrenamiento_cumplido' => isset($_POST['entrenamiento_cumplido']) ? 1 : 0,
+        ];
+
+        // Verifica si el usuario marcó al menos un hábito
+        $habitosCompletados = $data['agua_cumplido'] || $data['sueno_cumplido'] || $data['entrenamiento_cumplido'];
+        
+        // 1. Guardar el registro de hábito diario
+        $habitoModel = new HabitoRegistro();
+        $registroPrevio = $habitoModel->findByDate($userId, $fechaHoy); // Verifica si ya existía un registro hoy
+        $habitoModel->saveCheckin($userId, $fechaHoy, $data);
+
+        // --- INICIO LÓGICA DE GAMIFICACIÓN Y DESAFÍOS ---
+        
+        $userModel = new User();
+        $badgeService = new BadgeService();
         $desafioModel = new DesafioUsuario();
 
-        // Si marcó la casilla de agua, actualiza retos de 'agua'
-        if ($data['agua_cumplido']) {
-            $desafioModel->actualizarProgreso($userId, 'agua');
-        }
-        // Si marcó la casilla de sueño, actualiza retos de 'sueno'
-        if ($data['sueno_cumplido']) {
-            $desafioModel->actualizarProgreso($userId, 'sueno');
-        }
-        // Si marcó la casilla de entrenamiento, actualiza retos de 'entrenamiento'
-        if ($data['entrenamiento_cumplido']) {
-            $desafioModel->actualizarProgreso($userId, 'entrenamiento');
-        }
-        // (Añadir 'alimentacion' aquí en el futuro)
-    }
-    // ===================================
+        $xpGanado = 0;
+        $insigniaGanada = null; // Para insignias de una sola vez (ej. primer check-in)
+        $insigniaDesafio = null; // Para insignias de desafío completado
+        $subioDeNivel = false;
+        $nombreNuevoNivel = '';
 
-    // Redirigir de vuelta a la página de progreso
-    header('Location: ' . url('/progreso'));
-    exit;
-}
+        // Solo procesa XP y desafíos si marcó algo Y si es la primera vez que guarda hoy
+        // Esto evita ganar XP/progreso múltiples veces editando
+        $esPrimerRegistroDelDia = !$registroPrevio || (
+            $registroPrevio['agua_cumplido'] == 0 && 
+            $registroPrevio['sueno_cumplido'] == 0 && 
+            $registroPrevio['entrenamiento_cumplido'] == 0
+        );
+
+        if ($habitosCompletados && $esPrimerRegistroDelDia) {
+            
+            // 2. Otorgar XP por el check-in diario
+            $xpPorCheckin = 10; 
+            $resultadoXp = $userModel->addXp($userId, $xpPorCheckin);
+            $xpGanado += $xpPorCheckin;
+            if ($resultadoXp['subio_de_nivel']) {
+                $subioDeNivel = true;
+                $nombreNuevoNivel = $resultadoXp['nombre_nuevo_nivel'];
+            }
+            
+            // 3. Otorgar insignia "Primer Check-in" (si es la primera vez en la historia)
+            // (Necesitamos una comprobación mejor, ej. contar total de registros)
+            // Por ahora, lo simplificamos:
+            if (!$registroPrevio) { // Asume que si no hay registro *hoy*, podría ser el primero
+                $insigniaGanada = $badgeService->otorgarInsigniaPorCodigo($userId, 'primer-checkin');
+            }
+
+            // 4. Actualizar progreso de Desafíos
+            $tiposHabito = ['agua', 'sueno', 'entrenamiento'];
+            foreach ($tiposHabito as $tipo) {
+                if ($data[$tipo.'_cumplido']) {
+                    // Actualiza el progreso
+                    $desafioModel->actualizarProgreso($userId, $tipo);
+                    
+                    // Comprueba si ESE desafío se completó AHORA
+                    $progreso = $desafioModel->findProgresoByHabito($userId, $tipo);
+                    
+                    if ($progreso && $progreso['completado'] == 1) {
+                        // El desafío se acaba de completar, otorga la insignia
+                        // (Asumimos que el código de insignia coincide, ej: 'reto-agua-5')
+                        $codigoInsignia = 'reto-' . $tipo . '-' . $progreso['duracion_dias']; 
+                        $insigniaDesafioGanada = $badgeService->otorgarInsigniaPorCodigo($userId, $codigoInsignia);
+                        if ($insigniaDesafioGanada) {
+                             $insigniaDesafio = $insigniaDesafioGanada;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // --- FIN LÓGICA DE GAMIFICACIÓN ---
+
+        // 5. Crear Mensaje Flash
+        $mensaje = "¡Check-in guardado!";
+        if ($xpGanado > 0) {
+            $mensaje = "¡Check-in guardado! Ganaste +{$xpGanado} XP.";
+        }
+        if ($subioDeNivel) {
+            $mensaje = "¡FELICIDADES! Subiste a: Nivel {$nombreNuevoNivel}. Ganaste +{$xpGanado} XP.";
+        }
+        if ($insigniaGanada) { $mensaje .= " ¡Obtuviste la insignia '{$insigniaGanada}'!"; }
+        if ($insigniaDesafio) { $mensaje .= " ¡Completaste un desafío y ganaste la insignia '{$insigniaDesafio}'!"; }
+        
+        $_SESSION['flash_message'] = $mensaje;
+
+        // 6. Redirigir
+        header('Location: ' . url('/progreso'));
+        exit;
+    }
 
 public function savePeso()
     {

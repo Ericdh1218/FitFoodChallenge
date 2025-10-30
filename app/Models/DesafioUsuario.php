@@ -59,8 +59,24 @@ class DesafioUsuario
             ':user_id' => $userId,
             ':tipo_habito' => $tipoHabito
         ]);
+    }
+        /**
+     * Busca el progreso de un usuario en un desafío basado en el tipo_habito_link.
+     */
+    public function findProgresoByHabito(int $userId, string $tipoHabito): ?array
+    {
+        // Busca el progreso (du) uniéndolo con el desafío (d) que tenga el tipo_habito_link
+        $sql = "SELECT du.*, d.duracion_dias
+                FROM desafios_usuarios du
+                JOIN desafios d ON du.desafio_id = d.id
+                WHERE du.user_id = :user_id AND d.tipo_habito_link = :tipo_habito AND du.completado = 0
+                LIMIT 1"; // Asume que un usuario solo puede tener un reto activo de ese tipo
         
+        $st = $this->pdo->prepare($sql);
+        $st->execute([':user_id' => $userId, ':tipo_habito' => $tipoHabito]);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
         // (En el futuro, aquí podrías verificar $st->rowCount() > 0 y si se completó,
         // llamar a un servicio que otorgue la recompensa_xp)
     }
-}

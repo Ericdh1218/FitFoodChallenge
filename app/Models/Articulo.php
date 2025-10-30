@@ -34,16 +34,7 @@ class Articulo
         $st->execute($params);
         return $st->fetchAll(PDO::FETCH_ASSOC);
     }
-    /**
-     * Busca un artículo por su ID.
-     */
-    // En app/Models/Articulo.php
 
-// ... (all(), getCategorias(), etc.) ...
-
-/**
- * Busca un artículo por su ID (incluyendo url_externa y resumen).
- */
 public function find(int $id): ?array
 {
     // === ASEGÚRATE QUE SELECCIONE LAS COLUMNAS NECESARIAS ===

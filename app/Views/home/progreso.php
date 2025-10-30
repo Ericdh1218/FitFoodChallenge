@@ -4,6 +4,12 @@
 /** @var string $pesoDataJs */
 /** @var string $habitosDataJs */
 /** @var array $fotos */
+/** @var string $nombreNivel */
+/** @var int $xpActual */
+/** @var int $xpSiguienteNivel */
+/** @var int $xpInicioNivel */
+/** @var float $porcentajeProgreso */
+/** @var array $insignias */ // <-- AÑADE ESTA LÍNEA
 
 // Pre-procesar historial para combinarlo y ordenarlo por fecha
 $historial = [];
@@ -113,7 +119,53 @@ if (isset($_SESSION['flash_message'])) {
 
     </main>
     <aside class="layout-sidebar">
-        
+        <div class="section player-summary" style="margin-bottom: 24px;">
+            <h2 style="color: var(--brand-2);">Tu Progreso</h2>
+            
+            <div class="player-level" style="margin-top: 16px;">
+                <div style="font-size: 0.9em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Nivel Actual</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--brand-2); margin-top: 4px;">
+                    <?= (int)$usuario['level'] ?>: <?= htmlspecialchars($nombreNivel) ?>
+                </div>
+            </div>
+
+            <div class="player-xp" style="margin-top: 16px;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: <?= round($porcentajeProgreso, 2) ?>%;">
+                        <span><?= round($porcentajeProgreso) ?>%</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-top: 8px;">
+                    <span style="color: var(--muted); font-weight: 600;"><?= (int)$xpActual ?> XP</span>
+                    <?php if ($xpSiguienteNivel > $xpActual): // Muestra 'siguiente' solo si no es nivel max ?>
+                        <span style="color: var(--muted);">Siguiente: <?= (int)$xpSiguienteNivel ?> XP</span>
+                    <?php else: ?>
+                         <span style="color: var(--brand);">¡Nivel Máximo!</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="section player-summary" style="margin-bottom: 24px;">
+            </div>
+
+        <div class="section" style="margin-bottom: 24px;">
+            <h2>🏆 Mis Insignias</h2>
+            
+            <?php if (empty($insignias)): ?>
+                <p class="muted historial-vacio-mensaje" style="margin: 0; padding: 10px 0;">
+                    Aún no has ganado ninguna insignia. ¡Sigue completando retos!
+                </p>
+            <?php else: ?>
+                <div class="insignia-lista">
+                    <?php foreach ($insignias as $insignia): ?>
+                        <div class="insignia-item" title="<?= htmlspecialchars($insignia['descripcion']) ?> - Obtenida el <?= date('d/m/Y', strtotime($insignia['fecha_obtenida'])) ?>">
+                            <img src="<?= url('assets/img/iconos_insignias/' . htmlspecialchars($insignia['icono_url'])) ?>" alt="<?= htmlspecialchars($insignia['nombre']) ?>">
+                            <span><?= htmlspecialchars($insignia['nombre']) ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
         <div class="section" style="margin-bottom: 24px;">
             <h2>Actualizar Peso</h2>
             <form action="<?= url('/progreso/guardar-peso') ?>" method="POST">
@@ -217,6 +269,62 @@ if (isset($_SESSION['flash_message'])) {
 .feed-texto small { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
 .historial-vacio-mensaje { text-align: center; font-style: italic; margin: 10px 0; padding: 10px 0; color: var(--muted); }
 /* (Estilos para .checkin-completo, .habitos-registrados, .tag-verde, .form-check-group ya deberían estar en tu main.css) */
+.progress-bar-container {
+    width: 100%;
+    height: 24px;
+    background: var(--card); /* Fondo de la barra */
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    position: relative;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-2) 0%, var(--brand) 100%); /* Gradiente cian a verde */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bg); /* Texto oscuro */
+    transition: width 0.5s ease-in-out;
+}
+.progress-bar-fill span {
+    /* Sombra para que el texto resalte */
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4));
+}
+.insignia-lista {
+    display: grid;
+    /* 3 columnas de iconos */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 16px;
+    margin-top: 16px;
+}
+.insignia-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: help; /* Muestra un '?' al pasar el mouse por el 'title' */
+}
+.insignia-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    /* Efecto de "ganada" */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.2s ease;
+}
+.insignia-item:hover img {
+    transform: scale(1.1);
+}
+.insignia-item span {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 500;
+    line-height: 1.3;
+}
 </style>
 <!-- Plugin opcional para mostrar valores encima de los puntos -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
