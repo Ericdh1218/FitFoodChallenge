@@ -49,11 +49,11 @@ class RecetasController
     /**
      * Muestra el detalle de UNA receta, calculando sus nutrientes totales.
      * Responde a: /receta?id=...
-     */
+     */ 
     public function show()
     {
         if (!isset($_SESSION['usuario_id'])) { /* ... login ... */ }
-        $userId = $_SESSION['usuario_id']; // No se usa aquí, pero bueno tenerlo
+        $userId = $_SESSION['usuario_id']; 
 
         $id = (int)($_GET['id'] ?? 0);
         if (!$id) { /* ... redirect ... */ }
@@ -269,14 +269,8 @@ class RecetasController
         header('Location: ' . url('/mis-recetas')); // Redirige a la lista
         exit;
     }
-    // En app/Controllers/RecetasController.php
-
-    // ... (create() y store() existentes) ...
-
     /**
-     * ==========================================
      * NUEVO MÉTODO: Muestra las recetas creadas por el usuario
-     * ==========================================
      */
     public function myRecipes()
     {

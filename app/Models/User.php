@@ -231,5 +231,66 @@ public function getUserRank(int $userId): ?array
 
     return $row ?: null;
 }
+/**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Obtiene todos los usuarios
+     * ==========================================
+     */
+    public function getAllUsers(): array
+    {
+        // Trae todos los usuarios ordenados por fecha de registro
+        $sql = "SELECT id, nombre, correo, tipo_user, xp, level, fecha_registro 
+                FROM users 
+                ORDER BY fecha_registro DESC";
+        $st = $this->pdo->prepare($sql);
+        $st->execute();
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Actualiza los datos de un usuario
+     * ==========================================
+     */
+    public function updateUserAsAdmin(int $userId, array $data): bool
+    {
+        $sql = "UPDATE users 
+                SET 
+                    nombre = :nombre,
+                    correo = :correo,
+                    tipo_user = :tipo_user,
+                    level = :level,
+                    xp = :xp
+                WHERE id = :id";
+        
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([
+            ':nombre' => $data['nombre'],
+            ':correo' => $data['correo'],
+            ':tipo_user' => $data['tipo_user'],
+            ':level' => $data['level'],
+            ':xp' => $data['xp'],
+            ':id' => $userId
+        ]);
+        
+        // (Nota: No se incluye la contraseña aquí por simplicidad.
+        // Añadir cambio de contraseña requeriría un campo separado y hashing)
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Elimina un usuario por ID
+     * ==========================================
+     */
+    public function deleteUser(int $userId): bool
+    {
+        // Asegurarse de no borrar al usuario admin principal (ej. ID 1)
+        if ($userId === 1) { 
+            return false;
+        }
+        $sql = "DELETE FROM users WHERE id = :id";
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([':id' => $userId]);
+    }
 
 }

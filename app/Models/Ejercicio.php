@@ -176,4 +176,76 @@ class Ejercicio
         echo $html;
         exit;
     }
+
+    public static function create(array $data): bool
+    {
+        $pdo = DB::conn();
+        $sql = "INSERT INTO ejercicios (nombre, descripcion, media_url, video_url, grupo_muscular, tipo_entrenamiento, equipamiento) 
+                VALUES (:nombre, :descripcion, :media_url, :video_url, :grupo_muscular, :tipo_entrenamiento, :equipamiento)";
+        $st = $pdo->prepare($sql);
+        
+        return $st->execute([
+            ':nombre' => $data['nombre'],
+            ':descripcion' => $data['descripcion'],
+            ':media_url' => $data['media_url'],
+            ':video_url' => $data['video_url'],
+            ':grupo_muscular' => $data['grupo_muscular'],
+            ':tipo_entrenamiento' => $data['tipo_entrenamiento'],
+            ':equipamiento' => $data['equipamiento']
+        ]);
+        // (Nota: Asume que user_id es NULL por defecto para predefinidos)
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Actualiza un ejercicio
+     * ==========================================
+     */
+    public static function update(int $id, array $data): bool
+    {
+        $pdo = DB::conn();
+        $sql = "UPDATE ejercicios 
+                SET 
+                    nombre = :nombre,
+                    descripcion = :descripcion,
+                    media_url = :media_url,
+                    video_url = :video_url,
+                    grupo_muscular = :grupo_muscular,
+                    tipo_entrenamiento = :tipo_entrenamiento,
+                    equipamiento = :equipamiento
+                WHERE id = :id";
+        
+        $st = $pdo->prepare($sql);
+        return $st->execute([
+            ':nombre' => $data['nombre'],
+            ':descripcion' => $data['descripcion'],
+            ':media_url' => $data['media_url'],
+            ':video_url' => $data['video_url'],
+            ':grupo_muscular' => $data['grupo_muscular'],
+            ':tipo_entrenamiento' => $data['tipo_entrenamiento'],
+            ':equipamiento' => $data['equipamiento'],
+            ':id' => $id
+        ]);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Elimina un ejercicio
+     * ==========================================
+     */
+    public static function delete(int $id): bool
+    {
+        $pdo = DB::conn();
+        // Borrar de rutina_ejercicios (personales)
+        $st1 = $pdo->prepare("DELETE FROM rutina_ejercicios WHERE ejercicio_id = :id");
+        $st1->execute([':id' => $id]);
+        
+        // Borrar de rutina_prediseñada_ejercicios
+        $st2 = $pdo->prepare("DELETE FROM rutina_prediseñada_ejercicios WHERE ejercicio_id = :id");
+        $st2->execute([':id' => $id]);
+
+        // Borrar el ejercicio principal
+        $st3 = $pdo->prepare("DELETE FROM ejercicios WHERE id = :id");
+        return $st3->execute([':id' => $id]);
+    }
 }

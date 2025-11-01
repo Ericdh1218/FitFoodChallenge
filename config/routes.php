@@ -17,6 +17,38 @@ use App\Controllers\PlanController;
 use App\Controllers\TriviaController;
 use App\Controllers\DesafioController;
 use App\Controllers\RankingController;
+use App\Controllers\Admin\AdminDashboardController; 
+use App\Controllers\Admin\AdminUsersController; 
+use App\Controllers\Admin\AdminRecetasController;
+use App\Controllers\Admin\AdminEjerciciosController;
+use App\Controllers\Admin\AdminRutinasController;
+
+$router->get('/admin/dashboard', [AdminDashboardController::class, 'index']);
+$router->get('/admin/users', [AdminUsersController::class, 'index']);
+$router->get('/admin/users/edit', [AdminUsersController::class, 'edit']);
+$router->post('/admin/users/update', [AdminUsersController::class, 'update']);
+$router->post('/admin/users/delete', [AdminUsersController::class, 'delete']);
+
+$router->get('/admin/recetas', [AdminRecetasController::class, 'index']);
+$router->get('/admin/recetas/edit', [AdminRecetasController::class, 'edit']);
+$router->post('/admin/recetas/update', [AdminRecetasController::class, 'update']);
+$router->post('/admin/recetas/delete', [AdminRecetasController::class, 'delete']);
+
+$router->get('/admin/ejercicios', [AdminEjerciciosController::class, 'index']);
+$router->get('/admin/ejercicios/create', [AdminEjerciciosController::class, 'create']);
+$router->post('/admin/ejercicios/store', [AdminEjerciciosController::class, 'store']);
+$router->get('/admin/ejercicios/edit', [AdminEjerciciosController::class, 'edit']);
+$router->post('/admin/ejercicios/update', [AdminEjerciciosController::class, 'update']);
+$router->post('/admin/ejercicios/delete', [AdminEjerciciosController::class, 'delete']);
+$router->post('/admin/rutinas/agregar-ejercicio', [AdminRutinasController::class, 'addEjercicio']);
+$router->post('/admin/rutinas/quitar-ejercicio', [AdminRutinasController::class, 'removeEjercicio']);
+
+$router->get('/admin/rutinas', [AdminRutinasController::class, 'index']);
+$router->get('/admin/rutinas/create', [AdminRutinasController::class, 'create']);
+$router->post('/admin/rutinas/store', [AdminRutinasController::class, 'store']);
+$router->get('/admin/rutinas/edit', [AdminRutinasController::class, 'edit']);
+$router->post('/admin/rutinas/update', [AdminRutinasController::class, 'update']);
+$router->post('/admin/rutinas/delete', [AdminRutinasController::class, 'delete']);
 
 $router->get('/trivia/pregunta-aleatoria', [TriviaController::class, 'getRandomQuestionAjax']);
 
@@ -61,8 +93,10 @@ $router->post('/habitos-form', [HabitosController::class, 'store']);
 $router->post('/articulo/marcar-leido', [ArticulosController::class, 'markAsRead']);
 $router->get('/articulos', [ArticulosController::class, 'index']);
 $router->get('/articulo', [ArticulosController::class, 'show']);
+
 $router->get('/glosario', [GlosarioController::class, 'index']);
-$router->get('/glosario', [GlosarioController::class, 'index']);
+$router->get('/glosario/quiz', [GlosarioController::class, 'showQuiz']);
+$router->post('/glosario/quiz/submit', [GlosarioController::class, 'submitQuiz']);
 
 $router->get('/progreso', [ProgresoController::class,'index']);
 $router->post('/progreso', [ProgresoController::class,'store']);

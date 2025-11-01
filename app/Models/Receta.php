@@ -310,4 +310,80 @@ public function findByUserId(int $userId): array
         $st->execute([':receta_id' => $recetaId]);
         return $st->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Obtiene TODAS las recetas (de usuarios y predefinidas)
+     * ==========================================
+     */
+    public function getAllAdmin(): array
+    {
+        // Usamos LEFT JOIN para obtener el nombre del autor (si existe)
+        $sql = "SELECT 
+                    r.id, r.titulo, r.categoria, r.user_id, 
+                    u.nombre as autor_nombre
+                FROM recetas r
+                LEFT JOIN users u ON r.user_id = u.id
+                ORDER BY r.id DESC";
+        $st = $this->pdo->prepare($sql);
+        $st->execute();
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Actualiza una receta completa
+     * ==========================================
+     */
+    public function updateRecipeAsAdmin(int $recetaId, array $data): bool
+    {
+        $sql = "UPDATE recetas 
+                SET 
+                    titulo = :titulo,
+                    descripcion = :descripcion,
+                    ingredientes = :ingredientes,
+                    instrucciones = :instrucciones,
+                    categoria = :categoria,
+                    es_barato = :es_barato,
+                    es_rapido = :es_rapido,
+                    es_snack_estudio = :es_snack_estudio,
+                    kcal_manual = :kcal_manual,
+                    proteinas_g_manual = :proteinas_g_manual,
+                    grasas_g_manual = :grasas_g_manual,
+                    carbos_g_manual = :carbos_g_manual,
+                    fibra_g_manual = :fibra_g_manual
+                WHERE id = :id";
+        
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([
+            ':titulo' => $data['titulo'],
+            ':descripcion' => $data['descripcion'],
+            ':ingredientes' => $data['ingredientes'],
+            ':instrucciones' => $data['instrucciones'],
+            ':categoria' => $data['categoria'],
+            ':es_barato' => $data['es_barato'],
+            ':es_rapido' => $data['es_rapido'],
+            ':es_snack_estudio' => $data['es_snack_estudio'],
+            ':kcal_manual' => $data['kcal_manual'] ?: null, // Permite guardar NULL
+            ':proteinas_g_manual' => $data['proteinas_g_manual'] ?: null,
+            ':grasas_g_manual' => $data['grasas_g_manual'] ?: null,
+            ':carbos_g_manual' => $data['carbos_g_manual'] ?: null,
+            ':fibra_g_manual' => $data['fibra_g_manual'] ?: null,
+            ':id' => $recetaId
+        ]);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Elimina una receta
+     * ==========================================
+     */
+    public function deleteRecipe(int $recetaId): bool
+    {
+        // Gracias a ON DELETE CASCADE, esto también borrará
+        // las filas asociadas en 'receta_ingredientes'.
+        $sql = "DELETE FROM recetas WHERE id = :id";
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([':id' => $recetaId]);
+    }
 }

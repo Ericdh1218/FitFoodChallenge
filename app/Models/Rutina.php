@@ -199,4 +199,104 @@ class Rutina
         $st = $this->pdo->prepare($sql);
         return $st->execute([':id' => $rutinaEjercicioId]);
     }
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Obtiene TODAS las rutinas (predefinidas y de usuarios)
+     * ==========================================
+     */
+    public function getAllAdmin(): array
+    {
+        $sql = "SELECT 
+                    r.id, r.nombre_rutina, r.nivel, r.user_id, 
+                    u.nombre as autor_nombre
+                FROM rutinas r
+                LEFT JOIN users u ON r.user_id = u.id
+                ORDER BY r.id DESC";
+        $st = $this->pdo->prepare($sql);
+        $st->execute();
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Crea una nueva rutina (predefinida)
+     * ==========================================
+     */
+    public function createPredefinida(array $data): bool
+    {
+        $sql = "INSERT INTO rutinas (nombre_rutina, descripcion, nivel, tipo_rutina, user_id) 
+                VALUES (:nombre, :descripcion, :nivel, :tipo, NULL)"; // user_id es NULL
+        $st = $this->pdo->prepare($sql);
+        
+        return $st->execute([
+            ':nombre' => $data['nombre_rutina'],
+            ':descripcion' => $data['descripcion'],
+            ':nivel' => $data['nivel'],
+            ':tipo' => $data['tipo_rutina']
+        ]);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Actualiza una rutina
+     * ==========================================
+     */
+    public function updateRutina(int $id, array $data): bool
+    {
+        $sql = "UPDATE rutinas 
+                SET 
+                    nombre_rutina = :nombre,
+                    descripcion = :descripcion,
+                    nivel = :nivel,
+                    tipo_rutina = :tipo
+                WHERE id = :id";
+        
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([
+            ':nombre' => $data['nombre_rutina'],
+            ':descripcion' => $data['descripcion'],
+            ':nivel' => $data['nivel'],
+            ':tipo' => $data['tipo_rutina'],
+            ':id' => $id
+        ]);
+    }
+
+    /**
+     * ==========================================
+     * NUEVO MÉTODO (Admin): Elimina una rutina (y sus ejercicios asociados)
+     * ==========================================
+     */
+    public function deleteRutina(int $id): bool
+    {
+        // Borrar de rutinas personales (si algún usuario la creó, aunque no debería)
+        $st1 = $this->pdo->prepare("DELETE FROM rutina_ejercicios WHERE rutina_id = :id");
+        $st1->execute([':id' => $id]);
+        
+        // Borrar de rutinas predefinidas
+        $st2 = $this->pdo->prepare("DELETE FROM rutina_prediseñada_ejercicios WHERE rutina_id = :id");
+        $st2->execute([':id' => $id]);
+
+        // Borrar la rutina principal
+        $st3 = $this->pdo->prepare("DELETE FROM rutinas WHERE id = :id");
+        return $st3->execute([':id' => $id]);
+    }
+
+    // En app/Models/Rutina.php
+
+/** Añade un ejercicio a una rutina predefinida */
+public function addEjercicioPredefinido(int $rutinaId, int $ejercicioId, string $seriesReps): bool
+{
+    $sql = "INSERT INTO rutina_prediseñada_ejercicios (rutina_id, ejercicio_id, series_reps) 
+            VALUES (:rid, :eid, :series)";
+    $st = $this->pdo->prepare($sql);
+    return $st->execute([':rid' => $rutinaId, ':eid' => $ejercicioId, ':series' => $seriesReps]);
+}
+
+/** Quita un ejercicio de una rutina predefinida */
+public function removeEjercicioPredefinido(int $rutinaId, int $ejercicioId): bool
+{
+    $sql = "DELETE FROM rutina_prediseñada_ejercicios WHERE rutina_id = :rid AND ejercicio_id = :eid";
+    $st = $this->pdo->prepare($sql);
+    return $st->execute([':rid' => $rutinaId, ':eid' => $ejercicioId]);
+}
 }

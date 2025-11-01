@@ -1,4 +1,11 @@
 <?php
+/**
+ * Renderiza una vista con un layout.
+ *
+ * @param string $viewName El nombre de la vista (ej. 'home/index')
+ * @param array $data Los datos a pasar a la vista
+ * @param string $layout El nombre del layout (ej. 'main' o 'admin')
+ */
 function env(string $k, $d = null)
 {
     return $_ENV[$k] ?? getenv($k) ?: $d;
@@ -30,16 +37,25 @@ function url(string $path = ''): string
     return rtrim($base, '/') . '/' . ltrim($path, '/');
 }
 
-function view(string $template, array $data = [])
+function view(string $viewName, array $data = [], string $layout = 'main')
 {
+    // Extrae los datos para que estén disponibles como variables
     extract($data);
-    $viewFile = BASE_PATH . '/app/Views/' . $template . '.php';
-    if (!file_exists($viewFile)) {
-        http_response_code(404);
-        echo 'Vista no encontrada';
-        return;
+    
+    // Construye la ruta al archivo de la vista
+    $viewFile = BASE_PATH . '/app/Views/' . str_replace('.', '/', $viewName) . '.php';
+    
+    if (file_exists($viewFile)) {
+        // Carga el layout principal, el cual incluirá el $viewFile
+        $layoutFile = BASE_PATH . '/app/Views/layouts/' . $layout . '.php';
+        if (file_exists($layoutFile)) {
+            include $layoutFile;
+        } else {
+            echo "Error: Layout '{$layout}' no encontrado.";
+        }
+    } else {
+        echo "Error: Vista '{$viewName}' no encontrada.";
     }
-    include BASE_PATH . '/app/Views/layouts/main.php';
 }
 /**
  * Renderiza una vista "parcial" (solo el archivo) sin el layout principal.
