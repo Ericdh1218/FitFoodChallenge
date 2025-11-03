@@ -1,4 +1,8 @@
 <?php /** @var string $title */ ?>
+<?php
+// (Cargamos las variables $title y $viewFile que pasa el helper view())
+$pageTitle = $title ?? 'FitFoodChallenge';
+?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -18,69 +22,80 @@
 </head>
 <body>
   <header class="site-header container">
-  <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
+    <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
 
-  <button class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">
-    <span></span><span></span><span></span>
-  </button>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+    </button>
 
-  <nav class="nav" data-collapsible>
-    <?php if (isset($_SESSION['usuario_id'])): // SI ESTÁ LOGUEADO ?>
+    <nav class="nav" data-collapsible>
+        <?php if (isset($_SESSION['usuario_id'])): // --- USUARIO LOGUEADO --- ?>
+            
+            <a href="<?= url('/actividades') ?>">Actividades</a>
+            <a href="<?= url('/habitos') ?>">Hábitos</a>
+            <a href="<?= url('/progreso') ?>">Progreso</a>
 
-        <a href="<?= url('/actividades') ?>">Actividades</a>
-        <a href="<?= url('/habitos') ?>">Hábitos</a>
-        <a href="<?= url('/progreso') ?>">Progreso</a>
-
-        <div class="dropdown">
-            <a href="#" class="dropdown-toggle">Actividad física</a>
-            <div class="dropdown-menu">
-                <a href="<?= url('/deportes') ?>">Ejercicios</a>
-                <a href="<?= url('/rutinas') ?>">Rutinas</a>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle">Actividad física</a>
+                <div class="dropdown-menu">
+                    <a href="<?= url('/deportes') ?>">Ejercicios</a>
+                    <a href="<?= url('/rutinas') ?>">Rutinas</a>
+                </div>
             </div>
-        </div>
 
-        <div class="dropdown">
-            <a href="#" class="dropdown-toggle">Nutrición</a>
-            <div class="dropdown-menu">
-                <a href="<?= url('/recetas') ?>">Recetario</a>
-                <a href="<?= url('/guia-nutricional') ?>">Guía Nutricional</a>
-                 <a href="<?= url('/articulos') ?>">Biblioteca</a>
-                <a href="<?= url('/glosario') ?>">Glosario</a>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle">Nutrición</a>
+                <div class="dropdown-menu">
+                    <a href="<?= url('/recetas') ?>">Recetario</a>
+                    <a href="<?= url('/guia-nutricional') ?>">Guía Nutricional</a>
+                    <a href="<?= url('/articulos') ?>" style="border-top: 1px solid var(--line);">Biblioteca</a>
+                    <a href="<?= url('/glosario') ?>">Glosario</a>
+                </div>
             </div>
-        </div>
 
-        <div class="dropdown">
-            <a href="#" class="dropdown-toggle">
-                <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
-            </a>
-            <div class="dropdown-menu">
-                <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-                 <a href="<?= url('/mis-recetas') ?>">Mis Recetas</a>
-                <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle">
+                    <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+                    <a href="<?= url('/mis-recetas') ?>">Mis Recetas</a>
+                    <a href="<?= url('/ranking') ?>">Ranking</a>
+                    <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+                </div>
             </div>
-        </div>
+            
+            <?php if (isset($_SESSION['usuario_tipo']) && $_SESSION['usuario_tipo'] == 1): ?>
+                <a href="<?= url('/admin/dashboard') ?>" class="btn ghost" style="margin-left: 10px; color: var(--brand-2); border-color: var(--brand-2);">
+                    Admin Panel
+                </a>
+            <?php endif; ?>
+            <?php else: // --- USUARIO INVITADO --- ?>
+            
+            <a href="<?= url('/articulos') ?>">Biblioteca</a>
+            <a href="<?= url('/deportes') ?>">Ejercicios</a>
+            <a href="<?= url('/recetas') ?>">Recetas</a>
+            <a href="<?= url('/login') ?>" class="btn ghost" style="margin-left: 10px;">Iniciar Sesión</a>
+            <a href="<?= url('/registro') ?>" class="btn primary">Registrarse</a>
 
-    <?php else: // SI NO ESTÁ LOGUEADO (INVITADO) ?>
-        <a href="<?= url('/actividades') ?>">Actividades</a>
-        <a href="<?= url('/habitos') ?>">Hábitos</a>
-        <a href="<?= url('/articulos') ?>">Biblioteca</a>
-        <a href="<?= url('/login') ?>">Iniciar Sesión</a>
-        <a href="<?= url('/registro') ?>">Registrarse</a>
         <?php endif; // Fin del if/else de sesión ?>
-</nav>
+    </nav>
 </header>
 
+<main class="container">
+    <?php
+    // Carga la vista específica (ej. index.php, progreso.php)
+    if (file_exists($viewFile)) {
+        include $viewFile;
+    } else {
+        echo "<p>Error: Vista no encontrada.</p>";
+    }
+    ?>
+</main>
 
-  <main class="container">
-    <?php include $viewFile; ?>
-  </main>
-
-  <footer class="site-footer container">
+<footer class="site-footer container">
     <small>&copy; <?= date('Y') ?> FitFoodChallenge. Hecho con ❤.</small>
-  </footer>
+</footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <!--<script type="module" src="<?= url('assets/js/main.js') ?>" defer></script>-->
 </body>
 </html>

@@ -23,6 +23,7 @@ use App\Controllers\Admin\AdminRecetasController;
 use App\Controllers\Admin\AdminEjerciciosController;
 use App\Controllers\Admin\AdminRutinasController;
 
+$router->get('/admin', [AdminDashboardController::class, 'index']);
 $router->get('/admin/dashboard', [AdminDashboardController::class, 'index']);
 $router->get('/admin/users', [AdminUsersController::class, 'index']);
 $router->get('/admin/users/edit', [AdminUsersController::class, 'edit']);
