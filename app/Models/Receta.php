@@ -13,6 +13,20 @@ class Receta
         $this->pdo = DB::conn();
     }
 
+    // === Helpers para soportar bandera o 'origen' ===
+    /*
+    private function wherePredef(): string {
+        // si tu tabla tiene 'origen', usa eso
+        $cols = $this->pdo->query("SHOW COLUMNS FROM recetas")->fetchAll(PDO::FETCH_COLUMN, 0);
+        if (in_array('origen', $cols)) return "r.origen = 'predefinida'";
+        return "r.es_predefinida = 1";
+    }
+    private function whereUser(): string {
+        $cols = $this->pdo->query("SHOW COLUMNS FROM recetas")->fetchAll(PDO::FETCH_COLUMN, 0);
+        if (in_array('origen', $cols)) return "r.origen = 'usuario'";
+        return "r.es_predefinida = 0";
+    }
+    */
     /**
      * Obtiene todas las recetas, con filtros.
      * Filtros: q (texto), categoria
@@ -61,7 +75,7 @@ class Receta
     /**
      * Busca una receta por su ID
      */
-    public function find(int $id): ?array
+   /* public function find(int $id): ?array
 {
     $st = $this->pdo->prepare(
         "SELECT id, user_id, titulo, descripcion, ingredientes, imagen, categoria, instrucciones,
@@ -73,7 +87,7 @@ class Receta
     $st->execute([':id' => $id]);
     $row = $st->fetch(PDO::FETCH_ASSOC);
     return $row ?: null;
-}
+}*/
 
     /**
      * Obtiene todas las categorías únicas de la BD
@@ -317,18 +331,19 @@ public function findByUserId(int $userId): array
      * ==========================================
      */
     public function getAllAdmin(): array
-    {
-        // Usamos LEFT JOIN para obtener el nombre del autor (si existe)
-        $sql = "SELECT 
-                    r.id, r.titulo, r.categoria, r.user_id, 
-                    u.nombre as autor_nombre
-                FROM recetas r
-                LEFT JOIN users u ON r.user_id = u.id
-                ORDER BY r.id DESC";
-        $st = $this->pdo->prepare($sql);
-        $st->execute();
-        return $st->fetchAll(PDO::FETCH_ASSOC);
-    }
+{
+    $sql = "SELECT r.id, r.titulo, r.categoria, r.es_predefinida, r.autor_user_id,
+                   u.nombre AS autor_nombre,
+                   u.correo AS autor_email
+            FROM recetas r
+            LEFT JOIN users u ON u.id = r.autor_user_id
+            ORDER BY r.id DESC";
+    $st = $this->pdo->prepare($sql);
+    $st->execute();
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 
     /**
      * ==========================================
@@ -386,4 +401,122 @@ public function findByUserId(int $userId): array
         $st = $this->pdo->prepare($sql);
         return $st->execute([':id' => $recetaId]);
     }
+    public function getPredefinidas(): array
+{
+    $sql = "SELECT r.*
+            FROM recetas r
+            WHERE {$this->wherePredef()}
+            ORDER BY r.id DESC";
+    return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getDeUsuarios(): array
+{
+    $sql = "SELECT r.*,
+                   u.nombre AS autor_nombre,
+                   u.correo AS autor_email
+            FROM recetas r
+            LEFT JOIN users u ON u.id = r.autor_user_id
+            WHERE {$this->whereUser()}
+            ORDER BY r.id DESC";
+    return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+    public function createPredefinida(array $data): bool
+{
+    $sql = "INSERT INTO recetas
+            (titulo, categoria, descripcion, instrucciones, imagen,
+             kcal_manual, proteinas_g_manual, carbos_g_manual, grasas_g_manual,
+             es_predefinida, autor_user_id)
+            VALUES
+            (:titulo, :categoria, :descripcion, :instrucciones, :img,
+             :kcal, :prote, :carbs, :grasas,
+             1, NULL)";
+    $st = $this->pdo->prepare($sql);
+    return $st->execute([
+        ':titulo' => $data['titulo'],
+        ':categoria' => $data['categoria'] ?? null,
+        ':descripcion' => $data['descripcion'] ?? null,
+        ':instrucciones' => $data['instrucciones'] ?? null,
+        ':img' => $data['imagen'] ?? null,
+        ':kcal' => $data['kcal_manual'] ?? null,
+        ':prote' => $data['proteinas_g_manual'] ?? null,
+        ':carbs' => $data['carbos_g_manual'] ?? null,
+        ':grasas' => $data['grasas_g_manual'] ?? null,
+    ]);
+}
+
+public function createDeUsuario(array $data, int $userId): bool
+{
+    $sql = "INSERT INTO recetas
+            (titulo, categoria, descripcion, instrucciones, imagen,
+             kcal_manual, proteinas_g_manual, carbos_g_manual, grasas_g_manual,
+             es_predefinida, autor_user_id)
+            VALUES
+            (:titulo, :categoria, :descripcion, :instrucciones, :img,
+             :kcal, :prote, :carbs, :grasas,
+             0, :uid)";
+    $st = $this->pdo->prepare($sql);
+    return $st->execute([
+        ':titulo' => $data['titulo'],
+        ':categoria' => $data['categoria'] ?? null,
+        ':descripcion' => $data['descripcion'] ?? null,
+        ':instrucciones' => $data['instrucciones'] ?? null,
+        ':img' => $data['imagen'] ?? null,
+        ':kcal' => $data['kcal_manual'] ?? null,
+        ':prote' => $data['proteinas_g_manual'] ?? null,
+        ':carbs' => $data['carbos_g_manual'] ?? null,
+        ':grasas' => $data['grasas_g_manual'] ?? null,
+        ':uid' => $userId,
+    ]);
+}
+
+    public function find(int $id): ?array
+    {
+        $st = $this->pdo->prepare("SELECT * FROM recetas WHERE id=:id");
+        $st->execute([':id' => $id]);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /** Duplica una receta predefinida a una del usuario */
+    public function clonarPredefinidaParaUsuario(int $recetaId, int $userId): bool
+{
+    $sql = "INSERT INTO recetas
+            (titulo, categoria, descripcion, instrucciones, imagen,
+             kcal_manual, proteinas_g_manual, carbos_g_manual, grasas_g_manual,
+             es_predefinida, autor_user_id)
+            SELECT
+             titulo, categoria, descripcion, instrucciones, imagen,
+             kcal_manual, proteinas_g_manual, carbos_g_manual, grasas_g_manual,
+             0, :uid
+            FROM recetas r
+            WHERE r.id = :id AND {$this->wherePredef()}";
+    $st = $this->pdo->prepare($sql);
+    return $st->execute([':id' => $recetaId, ':uid' => $userId]);
+}
+
+
+    public function delete(int $id): bool
+    {
+        $st = $this->pdo->prepare("DELETE FROM recetas WHERE id=:id");
+        return $st->execute([':id' => $id]);
+    }
+    private function colExists(string $table, string $column): bool {
+    $sql = "SELECT COUNT(*) 
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = :t
+              AND COLUMN_NAME = :c";
+    $st = $this->pdo->prepare($sql);
+    $st->execute([':t' => $table, ':c' => $column]);
+    return (bool)$st->fetchColumn();
+}
+private function wherePredef(): string {  // recetas predefinidas de la plataforma
+    return "r.es_predefinida = 1";
+}
+private function whereUser(): string {     // recetas creadas por usuarios
+    return "r.es_predefinida = 0";
+}
+
 }

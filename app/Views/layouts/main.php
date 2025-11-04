@@ -5,97 +5,101 @@ $pageTitle = $title ?? 'FitFoodChallenge';
 ?>
 <!doctype html>
 <html lang="es">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="/fitfoodchallenge/public/">
-  <title><?= isset($title) ? htmlspecialchars($title) : 'FitFoodChallenge' ?></title>
+    <title><?= isset($title) ? htmlspecialchars($title) : 'FitFoodChallenge' ?></title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
 
-  <!--<link rel="stylesheet" href="<?= url('assets/css/main.css') ?>">-->
-  <!--<script type="module" src="<?= url('assets/js/main.js') ?>" defer></script>-->
-  <link rel="stylesheet" href="assets/css/main.css">
+    <!--<link rel="stylesheet" href="<?= url('assets/css/main.css') ?>">-->
+    <!--<script type="module" src="<?= url('assets/js/main.js') ?>" defer></script>-->
+    <link rel="stylesheet" href="assets/css/main.css">
     <script type="module" src="assets/js/main.js" defer></script>
 </head>
+
 <body>
-  <header class="site-header container">
-    <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
+    <header class="site-header container">
+        <a href="<?= url('/') ?>" class="brand">FitFood<span>Challenge</span></a>
 
-    <button class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">
-        <span></span><span></span><span></span>
-    </button>
+        <button class="menu-toggle" aria-expanded="false" aria-label="Abrir menú">
+            <span></span><span></span><span></span>
+        </button>
 
-    <nav class="nav" data-collapsible>
-        <?php if (isset($_SESSION['usuario_id'])): // --- USUARIO LOGUEADO --- ?>
-            
-            <a href="<?= url('/actividades') ?>">Actividades</a>
-            <a href="<?= url('/habitos') ?>">Hábitos</a>
-            <a href="<?= url('/progreso') ?>">Progreso</a>
+        <nav class="nav" data-collapsible>
+            <?php if (isset($_SESSION['usuario_id'])): // --- USUARIO LOGUEADO --- ?>
 
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle">Actividad física</a>
-                <div class="dropdown-menu">
-                    <a href="<?= url('/deportes') ?>">Ejercicios</a>
-                    <a href="<?= url('/rutinas') ?>">Rutinas</a>
+                <a href="<?= url('/actividades') ?>">Actividades</a>
+                <a href="<?= url('/habitos') ?>">Hábitos</a>
+                <a href="<?= url('/progreso') ?>">Progreso</a>
+
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle">Actividad física</a>
+                    <div class="dropdown-menu">
+                        <a href="<?= url('/deportes') ?>">Ejercicios</a>
+                        <a href="<?= url('/rutinas') ?>">Rutinas</a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle">Nutrición</a>
-                <div class="dropdown-menu">
-                    <a href="<?= url('/recetas') ?>">Recetario</a>
-                    <a href="<?= url('/guia-nutricional') ?>">Guía Nutricional</a>
-                    <a href="<?= url('/articulos') ?>" style="border-top: 1px solid var(--line);">Biblioteca</a>
-                    <a href="<?= url('/glosario') ?>">Glosario</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle">Nutrición</a>
+                    <div class="dropdown-menu">
+                        <a href="<?= url('/recetas') ?>">Recetario</a>
+                        <a href="<?= url('/guia-nutricional') ?>">Guía Nutricional</a>
+                        <a href="<?= url('/articulos') ?>" style="border-top: 1px solid var(--line);">Biblioteca</a>
+                        <a href="<?= url('/glosario') ?>">Glosario</a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle">
-                    <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
-                    <a href="<?= url('/mis-recetas') ?>">Mis Recetas</a>
-                    <a href="<?= url('/ranking') ?>">Ranking</a>
-                    <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle">
+                        <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Mi Perfil') ?>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="<?= url('/micuenta') ?>">Mi cuenta</a>
+                        <a href="<?= url('/mis-recetas') ?>">Mis Recetas</a>
+                        <a href="<?= url('/ranking') ?>">Ranking</a>
+                        <a href="<?= url('/logout') ?>" style="color: var(--danger, #ef4444);">Cerrar Sesión</a>
+                    </div>
                 </div>
-            </div>
-            
-            <?php if (isset($_SESSION['usuario_tipo']) && $_SESSION['usuario_tipo'] == 1): ?>
-                <a href="<?= url('/admin/dashboard') ?>" class="btn ghost" style="margin-left: 10px; color: var(--brand-2); border-color: var(--brand-2);">
-                    Admin Panel
-                </a>
-            <?php endif; ?>
+
+                <?php if (!empty($_SESSION['tipo_user']) && (int) $_SESSION['tipo_user'] === 1): ?>
+                    <a class="dropdown-item" href="<?= url('/admin') ?>">Panel Admin</a>
+                <?php endif; ?>
+
             <?php else: // --- USUARIO INVITADO --- ?>
-            
-            <a href="<?= url('/articulos') ?>">Biblioteca</a>
-            <a href="<?= url('/deportes') ?>">Ejercicios</a>
-            <a href="<?= url('/recetas') ?>">Recetas</a>
-            <a href="<?= url('/login') ?>" class="btn ghost" style="margin-left: 10px;">Iniciar Sesión</a>
-            <a href="<?= url('/registro') ?>" class="btn primary">Registrarse</a>
 
-        <?php endif; // Fin del if/else de sesión ?>
-    </nav>
-</header>
+                <a href="<?= url('/articulos') ?>">Biblioteca</a>
+                <a href="<?= url('/deportes') ?>">Ejercicios</a>
+                <a href="<?= url('/recetas') ?>">Recetas</a>
+                <a href="<?= url('/login') ?>" class="btn ghost" style="margin-left: 10px;">Iniciar Sesión</a>
+                <a href="<?= url('/registro') ?>" class="btn primary">Registrarse</a>
 
-<main class="container">
-    <?php
-    // Carga la vista específica (ej. index.php, progreso.php)
-    if (file_exists($viewFile)) {
-        include $viewFile;
-    } else {
-        echo "<p>Error: Vista no encontrada.</p>";
-    }
-    ?>
-</main>
+            <?php endif; // Fin del if/else de sesión ?>
+        </nav>
+    </header>
 
-<footer class="site-footer container">
-    <small>&copy; <?= date('Y') ?> FitFoodChallenge. Hecho con ❤.</small>
-</footer>
+    <main class="container">
+        <?php
+        // Carga la vista específica (ej. index.php, progreso.php)
+        if (file_exists($viewFile)) {
+            include $viewFile;
+        } else {
+            echo "<p>Error: Vista no encontrada.</p>";
+        }
+        ?>
+    </main>
+
+    <footer class="site-footer container">
+        <small>&copy; <?= date('Y') ?> FitFoodChallenge. Hecho con ❤.</small>
+    </footer>
 
 </body>
+
 </html>

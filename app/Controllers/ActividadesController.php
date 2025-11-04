@@ -1,121 +1,132 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\Ejercicio; 
+use App\Models\Ejercicio;
 use App\Models\Actividad;
-use App\Models\UsuarioEstado; // <-- AÑADIR
+use App\Models\UsuarioEstado;
 use App\Models\User;
 
 class ActividadesController
 {
-    /**
-     * Muestra el dashboard de Actividades (NEAT Aleatoria + Resto)
-     */
+    /** Página principal de Actividades */
     public function index(): void
     {
-        if (!isset($_SESSION['usuario_id'])) {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['usuario_id'])) {
             header('Location: ' . url('/login')); exit;
         }
-        $userId = $_SESSION['usuario_id'];
+        $userId = (int)$_SESSION['usuario_id'];
 
         $actividadModel = new Actividad();
-        $estadoModel = new UsuarioEstado();
+        $estadoModel    = new UsuarioEstado();
 
-        // 1. Obtener estado de hoy (refrescos usados)
-        $estadoHoy = $estadoModel->getOrCreateHoy($userId);
-        $refrescosRestantes = 3 - (int)$estadoHoy['refrescos_neat_usados'];
+        // Estado de hoy (cambios usados)
+        $estadoHoy            = $estadoModel->getOrCreateHoy($userId);
+        $usados               = (int)($estadoHoy['refrescos_neat_usados'] ?? 0);
+        $refrescosRestantes   = max(0, 3 - $usados);
 
-        // 2. Obtener Actividad Aleatoria del Día
-        $actividadDestacada = $actividadModel->getOneRandomActivity();
+        // Actividad destacada
+        $actividadDestacada = $actividadModel->getOneRandomActivity(); // si tu método acepta excluir, pásale null
 
-        // 3. Obtener el resto de actividades (excluyendo la destacada)
-        $idExcluir = $actividadDestacada ? $actividadDestacada['id'] : null;
-        $actividadesNeat = $actividadModel->getNeatActivities($idExcluir);
+        // Resto de NEAT excluyendo la destacada
+        $idExcluir        = $actividadDestacada['id'] ?? null;
+        $actividadesNeat  = $actividadModel->getNeatActivities($idExcluir);
 
-        // 4. (Ejercicios Express se queda igual)
-        $ejerciciosExpress = \App\Models\Ejercicio::findByFilter(
-            ['equipamiento' => 'Sin Equipo'], 3
-        );
-        
+        // Ejercicios express (ejemplo)
+        $ejerciciosExpress = Ejercicio::findByFilter(['equipamiento' => 'Sin Equipo'], 3);
+
+        // Conteo de completadas por usuario (lo usas en la vista)
+        $conteos = $actividadModel->getCompletionCounts($userId);
+
         view('home/actividades', [
-            'title' => 'Actividades',
-            'ejercicios' => $ejerciciosExpress,
-            'actividadDestacada' => $actividadDestacada, // Nueva
-            'actividadesNeat' => $actividadesNeat,
-            'refrescosRestantes' => $refrescosRestantes // Nueva
+            'title'               => 'Actividades',
+            'ejercicios'          => $ejerciciosExpress,
+            'actividadDestacada'  => $actividadDestacada,
+            'actividadesNeat'     => $actividadesNeat,
+            'refrescosRestantes'  => $refrescosRestantes,
+            'conteos'             => $conteos,
         ]);
     }
 
-    /**
-     * ==========================================
-     * NUEVO MÉTODO (AJAX): Refresca la actividad NEAT del día
-     * ==========================================
-     */
+    /** AJAX: refresca la actividad NEAT del día */
     public function refrescarNeat()
-    {
-        header('Content-Type: application/json');
-        $respondJson = fn($data) => exit(json_encode($data));
-        
-        if (!isset($_SESSION['usuario_id'])) {
-            return $respondJson(['success' => false, 'message' => 'Acceso denegado.']);
-        }
-        $userId = $_SESSION['usuario_id'];
+{
+    header('Content-Type: application/json');
+    if (session_status() === PHP_SESSION_NONE) session_start();
 
-        $estadoModel = new UsuarioEstado();
-        $estadoHoy = $estadoModel->getOrCreateHoy($userId);
-        $refrescosUsados = (int)$estadoHoy['refrescos_neat_usados'];
+    $respond = function(array $p, int $code = 200){
+        http_response_code($code);
+        exit(json_encode($p));
+    };
 
-        // Lógica de límite de 3 refrescos
-        if ($refrescosUsados >= 3) {
-            return $respondJson(['success' => false, 'message' => '¡Ya usaste tus 3 cambios de hoy!']);
-        }
-
-        // Incrementar el contador
-        $estadoModel->usarRefresco($userId);
-        
-        // Obtener una nueva actividad
-        $actividadModel = new Actividad();
-        $nuevaActividad = $actividadModel->getOneRandomActivity();
-        
-        return $respondJson([
-            'success' => true,
-            'actividad' => $nuevaActividad,
-            'refrescosRestantes' => 2 - $refrescosUsados // 3 (total) - ($refrescosUsados + 1)
-        ]);
+    if (empty($_SESSION['usuario_id'])) {
+        return $respond(['success'=>false,'message'=>'Acceso denegado.'], 401);
     }
-    
-    /**
-     * ==========================================
-     * NUEVO MÉTODO (AJAX): Completa una actividad NEAT
-     * ==========================================
-     */
+    $userId = (int)$_SESSION['usuario_id'];
+
+    $estadoModel = new UsuarioEstado();
+    $estadoHoy   = $estadoModel->getOrCreateHoy($userId);
+    $usados      = (int)($estadoHoy['refrescos_neat_usados'] ?? 0);
+
+    if ($usados >= 3) {
+        return $respond(['success'=>false,'message'=>'¡Ya usaste tus 3 cambios de hoy!']);
+    }
+
+    // Incrementa contador
+    $estadoModel->usarRefresco($userId);
+    $usados++;
+
+    // ID actual (para evitar repetir)
+    $excludeId      = (int)($_POST['exclude_id'] ?? 0);
+    $actividadModel = new Actividad();
+
+    // Tu modelo no acepta parámetros: pedimos una, y si coincide con la actual probamos del pool
+    $nueva = $actividadModel->getOneRandomActivity(); // sin argumentos
+    if (!$nueva || ($excludeId && (int)($nueva['id'] ?? 0) === $excludeId)) {
+        $pool = $actividadModel->getNeatActivities($excludeId ?: null); // excluye la actual si tu método lo soporta
+        if (!empty($pool)) {
+            $nueva = $pool[array_rand($pool)];
+        }
+    }
+
+    $restantes = max(0, 3 - $usados);
+    return $respond([
+        'success'            => true,
+        'actividad'          => $nueva,
+        'refrescosRestantes' => $restantes,
+    ]);
+}
+
+
+    /** AJAX: completar NEAT (suma XP, actualiza conteo) */
     public function completarNeat()
     {
         header('Content-Type: application/json');
-        $respondJson = fn($data) => exit(json_encode($data));
-        
-        if (!isset($_SESSION['usuario_id'])) {
-            return $respondJson(['success' => false, 'message' => 'Acceso denegado.']);
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        $respond = function(array $p, int $code = 200){ http_response_code($code); exit(json_encode($p)); };
+
+        if (empty($_SESSION['usuario_id'])) {
+            return $respond(['success'=>false,'message'=>'Acceso denegado.'], 401);
         }
-        $userId = $_SESSION['usuario_id'];
+        $userId      = (int)$_SESSION['usuario_id'];
         $actividadId = (int)($_POST['actividad_id'] ?? 0);
 
-        if (!$actividadId) {
-            return $respondJson(['success' => false, 'message' => 'ID de actividad no válido.']);
+        if ($actividadId <= 0) {
+            return $respond(['success'=>false,'message'=>'ID de actividad no válido.']);
         }
 
         $actividadModel = new Actividad();
-        $xpGanado = $actividadModel->completarActividad($userId, $actividadId);
+        $xpGanado       = (int)$actividadModel->completarActividad($userId, $actividadId);
 
-        // Devuelve el nuevo conteo total para esa actividad
-        $conteos = $actividadModel->getCompletionCounts($userId);
-        $nuevoTotal = $conteos[$actividadId] ?? 0;
+        $conteos    = $actividadModel->getCompletionCounts($userId);
+        $nuevoTotal = (int)($conteos[$actividadId] ?? 0);
 
-        return $respondJson([
-            'success' => true, 
-            'message' => '¡Actividad registrada! Ganaste ' . $xpGanado . ' XP.',
-            'xp' => $xpGanado,
-            'nuevoTotal' => $nuevoTotal
+        return $respond([
+            'success'    => true,
+            'message'    => '¡Actividad registrada! Ganaste ' . $xpGanado . ' XP.',
+            'xp'         => $xpGanado,
+            'nuevoTotal' => $nuevoTotal,
         ]);
     }
 }

@@ -20,14 +20,21 @@ class AdminRutinasController
      * Responde a: GET /admin/rutinas
      */
     public function index()
-    {
-        $rutinas = $this->rutinaModel->getAllAdmin();
-        
-        view('admin/rutinas/index', [
-            'title' => 'Gestionar Rutinas',
-            'rutinas' => $rutinas
-        ], 'admin');
-    }
+{
+    \App\Core\AdminMiddleware::check();
+
+    $model = new \App\Models\Rutina();
+
+    $predisenadas = $model->getPredisenadasAdmin();   // <= AQUÍ
+    $deUsuarios   = $model->getDeUsuariosAdmin();     // <= AQUÍ
+
+    view('admin/rutinas/index', [
+        'title'        => 'Gestionar Rutinas',
+        'predisenadas' => $predisenadas,
+        'deUsuarios'   => $deUsuarios,
+    ], 'admin');
+}
+
 
     /**
      * Muestra el formulario para crear una nueva rutina predefinida.

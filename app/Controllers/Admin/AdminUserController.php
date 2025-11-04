@@ -4,7 +4,7 @@ namespace App\Controllers\Admin;
 use App\Core\AdminMiddleware;
 use App\Models\User;
 
-class AdminUsersController
+class AdminUserController
 {
     protected $userModel;
 

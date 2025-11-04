@@ -204,7 +204,7 @@ class Rutina
      * NUEVO MÉTODO (Admin): Obtiene TODAS las rutinas (predefinidas y de usuarios)
      * ==========================================
      */
-    public function getAllAdmin(): array
+    /*public function getAllAdmin(): array
     {
         $sql = "SELECT 
                     r.id, r.nombre_rutina, r.nivel, r.user_id, 
@@ -216,7 +216,7 @@ class Rutina
         $st->execute();
         return $st->fetchAll(PDO::FETCH_ASSOC);
     }
-
+*/
     /**
      * ==========================================
      * NUEVO MÉTODO (Admin): Crea una nueva rutina (predefinida)
@@ -299,4 +299,70 @@ public function removeEjercicioPredefinido(int $rutinaId, int $ejercicioId): boo
     $st = $this->pdo->prepare($sql);
     return $st->execute([':rid' => $rutinaId, ':eid' => $ejercicioId]);
 }
+
+
+    public function getAllAdmin(): array
+{
+    $sql = "
+        SELECT
+            r.id,
+            r.nombre_rutina,
+            NULL            AS descripcion,
+            NULL            AS nivel,
+            r.user_id,
+            u.nombre        AS autor_nombre,
+            u.correo        AS autor_email,   -- <--- AQUÍ el cambio
+            'usuario'       AS origen,
+            r.created_at    AS creado_en
+        FROM `rutinas` r
+        LEFT JOIN `users` u ON u.id = r.user_id
+
+        UNION ALL
+
+        SELECT
+            rp.id,
+            rp.nombre_rutina,
+            rp.descripcion,
+            rp.nivel,
+            NULL            AS user_id,
+            'Sistema'       AS autor_nombre,
+            NULL            AS autor_email,
+            'prediseñada'   AS origen,
+            NULL            AS creado_en
+        FROM `rutinas_prediseñadas` rp
+
+        ORDER BY
+            creado_en IS NULL ASC,
+            creado_en DESC,
+            id DESC
+    ";
+
+    $st = $this->pdo->prepare($sql);
+    $st->execute();
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
+// Prediseñadas (tabla con ñ)
+public function getPredisenadasAdmin(): array
+{
+    $sql = "SELECT id, nombre_rutina, nivel, descripcion
+            FROM `rutinas_prediseñadas`
+            ORDER BY id DESC";
+    $st = $this->pdo->prepare($sql);
+    $st->execute();
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// De usuarios (un listado simple)
+public function getDeUsuariosAdmin(): array
+{
+    $sql = "SELECT r.id, r.nombre_rutina, r.created_at,
+                   u.nombre AS autor_nombre, u.correo AS autor_email
+            FROM `rutinas` r
+            LEFT JOIN `users` u ON u.id = r.user_id
+            ORDER BY r.created_at DESC, r.id DESC";
+    $st = $this->pdo->prepare($sql);
+    $st->execute();
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

@@ -10,11 +10,12 @@ class AdminMiddleware
             exit;
         }
 
-        // Soporte para claves de sesión diferentes (usuario_tipo o tipo_user)
+        // Lee la clave que guardamos en login. 
+        // (Soporta 'usuario_tipo' por compatibilidad, por si lo usaste en otro lado)
         $tipo = $_SESSION['tipo_user'] ?? $_SESSION['usuario_tipo'] ?? null;
 
-        // Si no es admin (tipo_user != 0)
-        if ((int)$tipo !== 0) {
+        // ✅ admin = 1 en tu BD
+        if ((int)$tipo !== 1) {
             header('Location: ' . url('/'));
             exit;
         }
